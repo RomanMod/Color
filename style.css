@@ -57,43 +57,41 @@ button:active {
     transform: scale(0.98);
 }
 button:disabled {
-    background-color: #cccccc;
+    background-color: var(--tg-theme-hint-color, #cccccc); /* Цвет неактивной кнопки из темы */
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .back-btn {
     margin-top: 20px;
-    background-color: var(--tg-theme-hint-color, #777777); /* Цвет для кнопки "назад" */
+    background-color: var(--tg-theme-secondary-bg-color, #777777); /* Используем вторичный цвет фона */
+    color: var(--tg-theme-text-color, #000000); /* Цвет текста как основной */
 }
+.back-btn:hover {
+     opacity: 0.8;
+}
+
 
 /* Игра "Намерение" */
 #intentionColorResult {
     width: 100%;
-    height: 200px; /* Высота блока для цвета */
-    margin: 20px 0;
+    max-width: 300px; /* Ограничим максимальную ширину блока */
+    height: 150px;    /* Высота блока для цвета */
+    margin: 20px auto; /* Центрируем блок по горизонтали */
     border-radius: 8px;
-    background-color: #eee; /* Изначальный фон */
-    transition: background-color 0.5s ease;
+    background-color: #eee; /* Изначальный серый фон */
+    transition: background-color 0.4s ease; /* Плавный переход цвета */
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 24px;
     font-weight: bold;
-    color: white; /* Цвет текста на цветном фоне */
+    color: white; /* Белый текст по умолчанию для цветных фонов */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Тень для читаемости */
+    border: 1px solid rgba(0,0,0,0.1); /* Небольшая рамка */
 }
 
-/* Классы для полноэкранного цвета (применяются к #app) */
-.app-container.red-bg {
-    background-color: #e74c3c; /* Красный */
-    color: white; /* Белый текст на красном */
-}
-.app-container.blue-bg {
-    background-color: #3498db; /* Синий */
-    color: white; /* Белый текст на синем */
-}
-
-/* Классы для цвета блока (если не делаем фон всего приложения) */
+/* Классы для цвета блока НАМЕРЕНИЯ */
 .intention-red {
     background-color: #e74c3c !important; /* Красный */
 }
@@ -110,18 +108,47 @@ button:disabled {
 }
 
 #visionChoice {
-    margin-top: 20px;
+    margin-top: 15px; /* Немного уменьшим отступ сверху */
+    /* Добавляем Flexbox для центрирования кнопок */
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center;     /* Центрирование по вертикали */
+    flex-wrap: wrap;         /* Перенос кнопок если не влезают */
+    width: 100%;             /* Занимаем всю ширину для центрирования */
+}
+#visionChoice p { /* Стили для текста "Какой цвет был загадан?" */
+    width: 100%; /* Занимает всю ширину перед кнопками */
+    margin-bottom: 10px;
 }
 
 .color-btn {
-    width: 100px;
-    height: 100px;
-    margin: 10px;
+    /* Увеличиваем размер кнопок */
+    width: 110px;  /* Было 100px */
+    height: 110px; /* Было 100px */
+    margin: 10px; /* Отступы между кнопками */
     border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 12px; /* Скруглим углы чуть больше */
     font-size: 18px;
+    font-weight: bold; /* Сделаем текст жирнее */
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6); /* Чуть темнее тень */
+    display: flex; /* Для центрирования текста внутри кнопки */
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Явно указываем курсор */
+    transition: transform 0.1s ease, box-shadow 0.2s ease; /* Добавляем эффекты */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Небольшая тень по умолчанию */
 }
+.color-btn:active {
+    transform: scale(0.96); /* Чуть сильнее эффект нажатия */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Тень при нажатии */
+}
+.color-btn:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Тень при наведении */
+    /* Можно добавить легкое увеличение при наведении */
+    /* transform: scale(1.02); */
+}
+
 
 .color-btn.red {
     background-color: #e74c3c;
@@ -135,32 +162,72 @@ button:disabled {
     margin-top: 20px;
     font-weight: bold;
     min-height: 24px; /* Резервируем место */
+    padding: 0 10px; /* Добавим отступы по бокам для длинных сообщений */
 }
+#visionResult.success {
+    color: #2ecc71; /* Яркий зеленый для успеха */
+}
+#visionResult.failure {
+     color: #e74c3c; /* Яркий красный для неудачи */
+}
+
 
 .stats {
     margin-top: 25px;
-    padding: 10px;
+    padding: 10px 15px; /* Немного увеличим паддинг */
     border: 1px solid var(--tg-theme-hint-color, #ccc);
     border-radius: 8px;
-    background-color: rgba(128, 128, 128, 0.1); /* Полупрозрачный серый */
+    background-color: rgba(128, 128, 128, 0.08); /* Сделаем фон еще прозрачнее */
+    max-width: 250px; /* Ограничим ширину блока статистики */
+    margin-left: auto;  /* Центрируем */
+    margin-right: auto; /* Центрируем */
 }
 
 .stats p {
-    margin: 5px 0;
+    margin: 6px 0; /* Чуть больше вертикальный отступ */
     font-size: 14px;
+    color: var(--tg-theme-text-color, #000000); /* Явный цвет текста */
+}
+.stats span {
+    font-weight: bold; /* Выделяем числа */
 }
 
 /* Адаптивность (простая) */
-@media (max-width: 350px) {
+@media (max-width: 380px) { /* Немного увеличил порог */
+    body {
+        /* Можно убрать внутренние отступы у body на маленьких экранах */
+       /* padding: 0; */
+    }
+    .app-container {
+        padding: 15px; /* Уменьшим паддинг контейнера */
+    }
+
     button {
-        padding: 10px 15px;
-        font-size: 14px;
+        padding: 10px 18px; /* Скорректируем паддинг */
+        font-size: 15px;
     }
     .color-btn {
-        width: 80px;
-        height: 80px;
+        /* Увеличиваем размер и в мобильной версии */
+        width: 90px;  /* Было 80px */
+        height: 90px; /* Было 80px */
         font-size: 16px;
+        margin: 8px; /* Уменьшим отступы на маленьких экранах */
+        border-radius: 10px; /* Скруглим меньше */
     }
-    h1 { font-size: 24px; }
-    h2 { font-size: 20px; }
-  }
+     #intentionColorResult {
+        height: 120px;
+        font-size: 20px;
+        max-width: 90%; /* Ширина относительно родителя */
+    }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    p { font-size: 14px; } /* Уменьшим базовый размер параграфов */
+
+    .stats {
+        max-width: 200px; /* Еще меньше блок статистики */
+        padding: 8px 12px;
+    }
+    .stats p {
+        font-size: 13px;
+    }
+    }
