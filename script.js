@@ -483,4 +483,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Игра "Символы"
     shuffleSymbolBtn.addEventListener('click', startSymbolShuffle);
-     change
+     changeSymbolsBtn.addEventListener('click', () => showScreen('symbolsSetup')); // Кнопка смены кол-ва
+
+    // --- Инициализация ---
+    initializeUserInterface();
+
+});
