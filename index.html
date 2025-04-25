@@ -3,116 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Намерение и Видение</title>
+    <title>Игра Намерение/Видение</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Подключаем Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="app" class="app-container">
-        <!-- 1. Экран приветствия -->
+
+    <div id="app">
         <div id="welcome" class="screen">
-            <h1>Привет, <span id="username">Игрок</span>!</h1>
-            <p>Что ты хочешь прокачать сегодня?</p>
-            <button id="chooseIntentionBtn">⚡️ Намерение</button>
-            <button id="chooseVisionBtn">👁️ Видение</button> <!-- Эта кнопка теперь ведет к выбору типа Видения -->
+            <h1>Привет, <span id="user-name">Игрок</span>!</h1>
+            <p>Что будем прокачивать?</p>
+            <button id="btn-intention" class="choice-button">Намерение</button>
+            <button id="btn-vision" class="choice-button">Видение</button>
         </div>
 
-        <!-- 2. Экран игры "Намерение" (без изменений) -->
-        <div id="intentionGame" class="screen hidden">
-            <h2>Прокачка Намерения</h2>
-            <p>Сконцентрируйся и прояви нужный цвет своим намерением. Когда будешь готов, нажми кнопку.</p>
-            <div id="intentionColorResult" class="color-display"></div>
-            <button id="showIntentionColorBtn">Показать Цвет</button>
-            <button class="back-btn" data-target="welcome">Назад</button>
+        <div id="vision-choice" class="screen">
+            <h2>Видение</h2>
+            <p>Выбери игру:</p>
+            <button id="btn-vision-color" class="choice-button">Цвет</button>
+            <button class="choice-button disabled" disabled>Символы (скоро)</button>
+            <button class="choice-button disabled" disabled>Ключ (скоро)</button>
+            <button class="choice-button disabled" disabled>Монеты (скоро)</button>
+            <button class="choice-button disabled" disabled>Кубик (скоро)</button>
+            <button id="btn-back-to-main" class="back-button">Назад</button>
         </div>
 
-        <!-- 3. Экран выбора типа игры "Видение" (НОВЫЙ) -->
-        <div id="visionTypeSelection" class="screen hidden">
-            <h2>Прокачка Видения</h2>
-            <p>Выбери тип игры:</p>
-            <button id="selectVisionColorBtn">🌈 Цвета</button>
-            <button id="selectVisionSymbolBtn">🧩 Символы</button>
-            <button class="placeholder-btn" disabled>🔑 Ключ</button>
-            <button class="placeholder-btn" disabled>⚽ Спорт</button>
-            <button class="placeholder-btn" disabled>📈 Биржа</button>
-            <button class="placeholder-btn" disabled>🪙 Монетка</button>
-            <button class="placeholder-btn" disabled>🎲 Кубик</button>
-            <button class="back-btn" data-target="welcome">Назад</button>
+        <div id="color-game-setup" class="screen">
+            <h2>Игра "Цвет" - Настройка</h2>
+            <p>Выбери два цвета:</p>
+            <div id="color-selector">
+                <!-- Кнопки выбора цвета будут добавлены через JS -->
+            </div>
+            <p>Выбрано: <span id="selected-color-1" class="color-swatch"></span> <span id="selected-color-2" class="color-swatch"></span></p>
+            <button id="btn-start-color-game" class="action-button">Начать игру</button>
+            <button id="btn-back-to-vision" class="back-button">Назад</button>
         </div>
 
-        <!-- 4. Экран настройки игры "Цвета" (НОВЫЙ) -->
-        <div id="colorSetupScreen" class="screen hidden">
-            <h2>Настройка игры "Цвета"</h2>
-            <p>Выбери от 2 до 7 цветов для игры:</p>
-            <div id="colorSelection" class="color-selection-container">
-                <!-- Чекбоксы для цветов будут добавлены сюда JS -->
+        <div id="color-game-play" class="screen">
+            <h2>Игра "Цвет"</h2>
+            <div id="color-display-area">
+                <div id="randomizer-display"></div> <!-- Здесь будет "бегать" цвет -->
             </div>
-            <p id="colorSelectionError" class="error-message hidden">Нужно выбрать от 2 до 7 цветов.</p>
-            <button id="startColorGameBtn">Начать игру "Цвета"</button>
-            <button class="back-btn" data-target="visionTypeSelection">Назад</button>
+            <div id="action-area">
+                 <button id="btn-show-color" class="action-button large">Показать Цвет</button>
+            </div>
+            <div id="result-area">
+                 <!-- Результат будет показан здесь -->
+            </div>
+             <button id="btn-back-to-color-setup" class="back-button">Сменить цвета</button>
         </div>
 
-        <!-- 5. Экран игры "Цвета" (бывший visionGameScreen, обновлен) -->
-        <div id="colorGameScreen" class="screen hidden">
-            <h2>Прокачка Видения: Цвета</h2>
-            <p>Попробуй угадать загаданный цвет.</p>
-            <button id="shuffleColorBtn">Перемешать и Загадать</button>
-            <div id="colorShuffling" class="shuffling-indicator hidden">Перемешиваем...</div>
-            <div id="colorChoice" class="choice-container hidden">
-                <p>Какой цвет был загадан?</p>
-                <div id="colorChoiceButtons" class="button-grid">
-                    <!-- Кнопки выбора цвета будут добавлены сюда JS -->
-                </div>
-            </div>
-            <div id="colorResult" class="result-message"></div>
-             <div id="colorStats" class="stats">
-                <p>Статистика (Цвета):</p>
-                <p>Успешно: <span id="colorWins">0</span></p>
-                <p>Попыток: <span id="colorAttempts">0</span></p>
-            </div>
-            <button class="back-btn" data-target="visionTypeSelection">Назад</button>
-             <!-- Кнопка для быстрой смены цветов -->
-            <button id="changeColorsBtn" class="secondary-action-btn">Сменить цвета</button>
-        </div>
-
-        <!-- 6. Экран настройки игры "Символы" (НОВЫЙ) -->
-        <div id="symbolsSetupScreen" class="screen hidden">
-            <h2>Настройка игры "Символы"</h2>
-            <p>Выбери количество символов для угадывания:</p>
-            <div class="button-group">
-                <button class="symbol-count-btn" data-count="2">2 Символа</button>
-                <button class="symbol-count-btn" data-count="3">3 Символа</button>
-                <button class="symbol-count-btn" data-count="4">4 Символа</button>
-            </div>
-            <p class="info-text">(Круг, Треугольник, Пусто, Квадрат)</p>
-            <button class="back-btn" data-target="visionTypeSelection">Назад</button>
-        </div>
-
-        <!-- 7. Экран игры "Символы" (НОВЫЙ) -->
-        <div id="symbolsGameScreen" class="screen hidden">
-            <h2>Прокачка Видения: Символы</h2>
-            <p>Попробуй угадать загаданный символ.</p>
-            <button id="shuffleSymbolBtn">Перемешать и Загадать</button>
-            <div id="symbolShuffling" class="shuffling-indicator hidden">Перемешиваем...</div>
-            <div id="symbolChoice" class="choice-container hidden">
-                <p>Какой символ был загадан?</p>
-                 <div id="symbolChoiceButtons" class="button-grid symbol-grid">
-                    <!-- Кнопки выбора символа будут добавлены сюда JS -->
-                </div>
-            </div>
-            <div id="symbolResult" class="result-message"></div>
-             <div id="symbolStats" class="stats">
-                <p>Статистика (Символы):</p>
-                <p>Успешно: <span id="symbolWins">0</span></p>
-                <p>Попыток: <span id="symbolAttempts">0</span></p>
-            </div>
-            <button class="back-btn" data-target="visionTypeSelection">Назад</button>
-             <!-- Кнопка для быстрой смены кол-ва символов -->
-             <button id="changeSymbolsBtn" class="secondary-action-btn">Сменить кол-во</button>
+         <div id="intention-game" class="screen">
+            <h2>Игра "Намерение"</h2>
+            <p>(Здесь будет игра "Намерение" - В разработке)</p>
+             <!-- Элементы для игры Намерение будут добавлены здесь -->
+             <button id="btn-intention-action" class="action-button">Кликни!</button>
+             <p>Результат: <span id="intention-result">-</span></p>
+            <button id="btn-back-to-main-from-intention" class="back-button">Назад</button>
         </div>
 
     </div>
 
     <script src="script.js"></script>
 </body>
-    </html>
+</html>
