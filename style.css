@@ -1,0 +1,166 @@
+/* Базовые стили */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--tg-theme-bg-color, #ffffff); /* Используем цвет фона из темы Telegram */
+    color: var(--tg-theme-text-color, #000000); /* Используем цвет текста из темы Telegram */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    overflow: hidden; /* Убираем прокрутку */
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px; /* Ограничиваем ширину для больших экранов */
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Стили экранов */
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-grow: 1; /* Занимает доступное пространство */
+}
+
+.hidden {
+    display: none !important; /* Важно для переопределения flex */
+}
+
+/* Кнопки */
+button {
+    padding: 12px 25px;
+    margin: 10px 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--tg-theme-button-color, #007bff); /* Цвет кнопки из темы */
+    color: var(--tg-theme-button-text-color, #ffffff); /* Цвет текста кнопки из темы */
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+button:active {
+    transform: scale(0.98);
+}
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.back-btn {
+    margin-top: 20px;
+    background-color: var(--tg-theme-hint-color, #777777); /* Цвет для кнопки "назад" */
+}
+
+/* Игра "Намерение" */
+#intentionColorResult {
+    width: 100%;
+    height: 200px; /* Высота блока для цвета */
+    margin: 20px 0;
+    border-radius: 8px;
+    background-color: #eee; /* Изначальный фон */
+    transition: background-color 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white; /* Цвет текста на цветном фоне */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Тень для читаемости */
+}
+
+/* Классы для полноэкранного цвета (применяются к #app) */
+.app-container.red-bg {
+    background-color: #e74c3c; /* Красный */
+    color: white; /* Белый текст на красном */
+}
+.app-container.blue-bg {
+    background-color: #3498db; /* Синий */
+    color: white; /* Белый текст на синем */
+}
+
+/* Классы для цвета блока (если не делаем фон всего приложения) */
+.intention-red {
+    background-color: #e74c3c !important; /* Красный */
+}
+.intention-blue {
+    background-color: #3498db !important; /* Синий */
+}
+
+
+/* Игра "Видение" */
+#visionShuffling {
+    margin: 20px 0;
+    font-style: italic;
+    color: var(--tg-theme-hint-color, #555);
+}
+
+#visionChoice {
+    margin-top: 20px;
+}
+
+.color-btn {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    border: 2px solid rgba(0,0,0,0.1);
+    font-size: 18px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.color-btn.red {
+    background-color: #e74c3c;
+}
+
+.color-btn.blue {
+    background-color: #3498db;
+}
+
+#visionResult {
+    margin-top: 20px;
+    font-weight: bold;
+    min-height: 24px; /* Резервируем место */
+}
+
+.stats {
+    margin-top: 25px;
+    padding: 10px;
+    border: 1px solid var(--tg-theme-hint-color, #ccc);
+    border-radius: 8px;
+    background-color: rgba(128, 128, 128, 0.1); /* Полупрозрачный серый */
+}
+
+.stats p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Адаптивность (простая) */
+@media (max-width: 350px) {
+    button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    .color-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 16px;
+    }
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+  }
