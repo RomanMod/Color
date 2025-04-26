@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Mini App</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Подключаем Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -84,25 +85,39 @@
             <!-- Тут будут секции для других игр по аналогии -->
             <div id="symbols-game" class="game-section">
                  <h3>Игра: Символы (<span id="symbols-current-mode"></span>)</h3>
-                 <!-- Элементы игры Символы -->
-                 <p>Эта игра пока не реализована.</p>
+                  <div id="symbols-vision-elements" class="game-mode-elements">
+                    <!-- Элементы для Виденья Символов -->
+                    <button id="symbols-shuffle-button">Перемешать символы (2с)</button>
+                    <div id="symbols-shuffling-indicator" class="indicator">Перемешивание...</div>
+                  </div>
+                   <div id="symbols-intention-elements" class="game-mode-elements">
+                    <!-- Элементы для Намерения Символов -->
+                    <button id="symbols-show-button">Показать Символ</button>
+                    <div id="symbols-randomizing-indicator" class="indicator">Намерение активно...</div>
+                  </div>
+                  <div id="symbols-revealed-symbol-display" class="revealed-display svg-display"></div>
+                  <div id="symbols-choice-buttons" class="choice-buttons"></div>
+                  <div id="symbols-result" class="result"></div>
+                  <div class="stats">
+                    <h4>Статистика</h4>
+                    <p>Попытки: <span id="symbols-stats-attempts">0</span></p>
+                    <p>Успешных: <span id="symbols-stats-wins">0</span></p>
+                    <p>Не успешные: <span id="symbols-stats-losses">0</span></p>
+                  </div>
                  <button class="back-button">Назад</button>
             </div>
              <div id="key-game" class="game-section">
                  <h3>Игра: Ключ (<span id="key-current-mode"></span>)</h3>
-                  <!-- Элементы игры Ключ -->
                  <p>Эта игра пока не реализована.</p>
                  <button class="back-button">Назад</button>
             </div>
              <div id="coins-game" class="game-section">
                  <h3>Игра: Монеты (<span id="coins-current-mode"></span>)</h3>
-                  <!-- Элементы игры Монеты -->
                  <p>Эта игра пока не реализована.</p>
                  <button class="back-button">Назад</button>
             </div>
              <div id="dice-game" class="game-section">
                  <h3>Игра: Кубик (<span id="dice-current-mode"></span>)</h3>
-                  <!-- Элементы игры Кубик -->
                  <p>Эта игра пока не реализована.</p>
                  <button class="back-button">Назад</button>
             </div>
