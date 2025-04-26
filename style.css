@@ -1,210 +1,236 @@
+/* Space Gray Theme Variables */
+:root {
+    --bg-color: #2e2e2e; /* Darker background */
+    --button-bg: #505050; /* Button color */
+    --button-text: #ffffff; /* Button text color */
+    --text-color: #cccccc; /* General text color */
+    --display-bg-black: #000000; /* Display background (black) */
+    --display-bg-white: #ffffff; /* Result background (white) */
+    --choice-button-bg: #404040; /* Slightly lighter grey for choice buttons */
+    --border-color: #606060; /* Border/separator color */
+    --success-color: #4CAF50; /* Green for success */
+    --fail-color: #F44336; /* Red for failure */
+}
+
 body {
-    font-family: sans-serif, Arial, Helvetica;
-    background-color: #333; /* Темно-серый фон */
-    color: #ccc; /* Светло-серый текст */
+    font-family: sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
     padding: 20px;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Выравнивание по верху */
+    align-items: flex-start; /* Align to top */
     min-height: 100vh;
     box-sizing: border-box;
 }
 
-.app-container {
+#app {
     width: 100%;
-    max-width: 600px; /* Ограничение ширины для больших экранов */
-    background-color: #444; /* Чуть светлее фон контейнера */
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-width: 400px; /* Limit width for better mobile display */
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-header {
+#player-name {
+    font-size: 1.2em;
     margin-bottom: 20px;
-    border-bottom: 1px solid #555; /* Разделитель в заголовке */
-    padding-bottom: 15px;
+    color: var(--text-color);
 }
 
-#user-name {
-    font-size: 0.9em;
-    color: #aaa;
-    margin: 0 0 5px 0;
+h2 {
+    color: var(--button-text); /* Headings might be brighter */
+    margin-top: 0;
+    margin-bottom: 20px;
 }
 
-#game-title {
-    margin: 0;
+.game-view {
+    display: none; /* Hide all views by default */
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-view.active {
+    display: flex; /* Show the active view */
+}
+
+.game-display {
+    width: 100%;
+    max-width: 350px; /* Make it wide */
+    height: 200px; /* Make it tall */
+    margin-bottom: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    display: flex; /* For centering content */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide overflowing content like SVGs */
+    position: relative; /* Needed for absolute positioning of results */
+    cursor: pointer; /* Indicate clickable */
+}
+
+.black-bg {
+     background-color: var(--display-bg-black);
+}
+
+/* Styling for displayed results (on white background) */
+.result-display {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--display-bg-white);
+    color: var(--bg-color); /* Text color on white */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     font-size: 1.5em;
-    color: #fff;
+    font-weight: bold;
 }
 
-.game-section {
-    display: none; /* Скрываем все секции по умолчанию */
+.result-display svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
 }
 
-.game-section.active {
-    display: block; /* Показываем активную секцию */
+.result-display svg circle,
+.result-display svg path {
+    fill: var(--bg-color); /* Black fill for shapes on white */
 }
 
-/* Общие стили для кнопок */
+.result-color-swatch {
+     width: 80px;
+     height: 80px;
+     margin-bottom: 10px;
+     border: 1px solid var(--border-color); /* Outline for color block */
+}
+
+
 button {
-    background-color: #555;
-    color: #fff;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     border: none;
-    padding: 10px 20px;
-    margin: 5px;
     border-radius: 5px;
+    padding: 10px 15px;
+    margin: 5px;
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.2s ease;
 }
 
-button:hover {
-    background-color: #666;
-}
-
-button:active {
-    background-color: #777;
+button:not(:disabled):hover {
+    background-color: #606060; /* Slightly lighter on hover */
 }
 
 button:disabled {
-    background-color: #3a3a3a;
-    color: #888;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
 .large-button {
-    padding: 15px 30px;
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 20px;
     font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.small-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+}
+
+.choice-buttons {
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
+    gap: 15px; /* Space between buttons */
 }
 
-/* Стили дисплея */
-.display {
-    width: 100%;
-    aspect-ratio: 16 / 9; /* Примерно широкоформатный */
-    background-color: #111; /* Черный дисплей */
-    margin: 20px auto;
+.choice-button {
+    width: 100px; /* Square buttons */
+    height: 100px;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    position: relative; /* Для позиционирования содержимого */
-    display: flex; /* Используем flexbox для центрирования содержимого */
+    background-color: var(--choice-button-bg);
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Скрываем, если что-то вылезет */
-    color: #fff; /* Цвет текста на дисплее */
-    font-size: 2em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.display.large {
-     aspect-ratio: 1 / 1; /* Квадратный для Видения */
-     max-width: 80%; /* Чуть меньше основного контейнера */
+.choice-button:not(:disabled):hover {
+    background-color: #505050;
 }
 
-/* Стили для отображаемых результатов */
-.display .result-item {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white; /* Белый фон для фигур/цвета */
+.choice-button.color-blue { background-color: blue; }
+.choice-button.color-red { background-color: red; }
+
+.choice-button svg {
+    width: 60px;
+    height: 60px;
 }
 
-.display .result-item.blue { background-color: blue; }
-.display .result-item.red { background-color: red; }
-
-.display .result-item svg {
-    width: 80%; /* Размер SVG */
-    height: 80%;
+.choice-button svg circle,
+.choice-button svg path {
+    fill: var(--bg-color); /* Black fill for shapes on light grey */
 }
 
-/* Стили для Видение - Кнопки угадывания */
-.guess-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* Расстояние между кнопками */
+.stats {
     margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 1em;
+    color: var(--text-color);
 }
 
-.guess-buttons button {
-    width: 120px; /* Фиксированная ширина */
-    height: 120px; /* Фиксированная высота */
-    padding: 0; /* Убираем внутренние отступы */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px; /* Скругленные углы */
-    background-color: #555; /* Фон кнопок */
+.stats p {
+    margin: 5px 0;
 }
 
-.guess-buttons button.color-button.blue { background-color: blue; }
-.guess-buttons button.color-button.red { background-color: red; }
-
-.guess-buttons button svg {
-    width: 80%;
-    height: 80%;
-    fill: black; /* Черные фигуры на кнопках */
-}
-
-/* Стили для элементов управления (настройки, назад) */
-.controls {
-    margin-top: 30px;
-    padding-top: 15px;
-    border-top: 1px solid #555;
+.controls-row {
+    width: 100%;
+    max-width: 350px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 20px;
 }
 
-.setting {
+.settings {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.setting label {
+.settings label {
+    font-size: 1em;
+}
+
+.settings select {
+    padding: 5px;
+    border-radius: 4px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    font-size: 1em;
     cursor: pointer;
 }
 
-.setting input[type="radio"] {
-    margin-right: 5px;
+/* Specific styles for result text */
+.result-text.success {
+    color: var(--success-color);
+    margin-top: 10px;
 }
 
-.btn-back {
-    background-color: #666;
-    padding: 8px 15px;
-    font-size: 0.9em;
+.result-text.fail {
+     color: var(--fail-color);
+     margin-top: 10px;
 }
-
-.btn-back:hover {
-     background-color: #777;
-}
-
-/* Стили статистики */
-.stats {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #3a3a3a; /* Темнее фон для статистики */
-    border-radius: 8px;
-    text-align: left;
-}
-
-.stats h3 {
-    margin-top: 0;
-    color: #fff;
-}
-
-.stats p {
-    margin: 5px 0;
-    font-size: 0.9em;
-}
-
-#videnie-result-text {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.8em;
-    color: #ccc; /* Цвет текста результата под дисплеем */
-    }
