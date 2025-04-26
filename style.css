@@ -107,25 +107,26 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--result-bg-color); /* Default white for intention/shapes */
-    color: var(--result-text-color);
+    /* Background color is set dynamically or by #intention-result */
+    background-color: transparent;
+    color: var(--result-text-color); /* Default black for text */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 3em; /* Размер текста/фигуры */
-    font-weight: bold;
-    border-radius: 8px; /* Унаследуем от display */
+    /* font-size and font-weight handled by .feedback-text or child elements */
+    border-radius: 8px; /* Inherit from display */
 }
 
-/* Styles specific to intention result display */
+/* Styles specific to intention result display - always white background */
 #intention-result {
      background-color: var(--result-bg-color); /* Always white background for intention result */
 }
 
+/* SVG size for the Intention result display */
 #intention-result svg {
-    max-width: 80%; /* Размер фигур */
-    max-height: 80%;
+    max-width: 95%; /* Увеличиваем размер фигур в Намеренье */
+    max-height: 95%;
 }
 
 
@@ -169,8 +170,8 @@ button:disabled {
 }
 
 .choice-btn {
-    width: 100px; /* Сделаем кнопки крупнее */
-    height: 100px; /* Сделаем кнопки крупнее */
+    width: 150px; /* Сделаем кнопки крупнее */
+    height: 150px; /* Сделаем кнопки крупнее */
     border-radius: 8px;
     padding: 0; /* Убрать внутренние отступы */
     display: flex; /* Для центрирования SVG */
@@ -213,11 +214,10 @@ button:disabled {
 
 /* Style for the feedback text shown over the result */
 .feedback-text {
-    font-size: 2em; /* Сделаем текст по центру крупнее */
+    font-size: 16px; /* Уменьшаем размер текста */
     font-weight: bold;
-    color: white; /* Белый текст для лучшей видимости на цветном фоне */
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Тень для контраста */
-    z-index: 1; /* Убедимся, что текст поверх цвета/фигуры */
+    /* Color set dynamically based on mode */
+    /* text-shadow and z-index removed as they are set in JS when needed */
 }
 
 /* Style for the container of shape + text feedback */
@@ -228,22 +228,25 @@ button:disabled {
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: white; /* Белый фон для фигур */
+    background-color: white; /* White background for shapes feedback */
     border-radius: 8px;
     gap: 10px; /* Отступ между фигурой и текстом */
+    padding: 10px; /* Добавим небольшой отступ внутри */
+    box-sizing: border-box; /* Учитываем отступ */
 }
 
-/* Ensure vision result display is flexible for centering */
+/* Style specifically for the shape SVG when displayed as a result in Vision */
+.vision-feedback-content svg {
+     max-width: 70%; /* Увеличим размер фигуры на дисплее в Виденье */
+     max-height: 70%;
+     fill: black; /* Убедимся, что фигура черная на белом фоне */
+}
+
+/* Ensure vision result display is flexible for centering its content */
 #vision-result {
     display: flex;
     justify-content: center;
     align-items: center;
     /* Background color is set dynamically in JS for color mode */
     background-color: transparent;
-}
-
-/* Style specifically for the shape SVG when displayed as a result in Vision */
-#vision-result svg {
-     max-width: 60%; /* Фигура на дисплее должна быть не на весь экран */
-     max-height: 60%;
     }
