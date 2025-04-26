@@ -12,6 +12,7 @@
     --choice-btn-bg-light: #d3d3d3; /* Светло-серый фон для кнопок выбора фигур */
     --red-color: #ff3b30;        /* Красный */
     --blue-color: #007aff;       /* Синий */
+    --card-bg-color: #3a3a3c;    /* Чуть светлее для карточек/текста */
 }
 
 body {
@@ -46,7 +47,7 @@ body {
     color: var(--text-color);
 }
 
-h1, h2 {
+h1, h2, h3 {
     color: var(--text-color);
     margin-top: 0;
 }
@@ -89,6 +90,12 @@ button:disabled {
     font-size: 1.2em;
 }
 
+.small-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    min-height: auto; /* Allow smaller height */
+}
+
 .display {
     width: 100%;
     aspect-ratio: 16 / 9; /* Соотношение сторон широкого дисплея */
@@ -98,7 +105,7 @@ button:disabled {
     justify-content: center;
     align-items: center;
     position: relative; /* Для позиционирования результата внутри */
-    overflow: hidden; /* Убедимся, что результат не вылезает */
+    overflow: hidden; /* Убедимся, что результат не вылазит */
 }
 
 .result-display {
@@ -121,7 +128,6 @@ button:disabled {
 /* Styles specific to intention result display - always white background */
 #intention-result {
      background-color: var(--result-bg-color); /* Always white background for intention result */
-     /* Убираем padding */
      padding: 0;
      box-sizing: border-box;
      display: flex; /* Ensure flex for centering svg */
@@ -169,6 +175,45 @@ button:disabled {
     padding: 10px 15px;
     font-size: 0.9em;
 }
+
+/* Menu Specific Styles */
+.menu-buttons {
+    display: flex;
+    flex-direction: column; /* Stack game buttons vertically */
+    gap: 15px;
+}
+
+.read-more-container {
+     text-align: right; /* Align button to the right */
+}
+
+
+/* "Read More" text area styles */
+#read-more-area {
+    background-color: var(--card-bg-color); /* Slightly lighter gray */
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left; /* Standard text alignment */
+    margin-top: 20px; /* Space above the text area */
+    color: var(--text-color);
+}
+
+#read-more-area h3 {
+    margin-bottom: 10px;
+    color: var(--text-color); /* Ensure heading is also white */
+}
+
+#read-more-area p {
+    margin-bottom: 10px; /* Space between paragraphs */
+    line-height: 1.5; /* Improve readability */
+}
+
+#read-more-area button {
+     margin-top: 15px; /* Space above the close button */
+     display: block; /* Make button take full width or align itself */
+     margin-left: auto; /* Align close button to the right */
+}
+
 
 /* Vision Game Specific Styles */
 #vision-choices {
@@ -268,4 +313,4 @@ button:disabled {
     /* Background color is set dynamically in JS for color mode */
     background-color: transparent;
     /* Remove default flex-direction/gap if set, handled dynamically or by content */
-    }
+}
