@@ -111,7 +111,7 @@ button:disabled {
     background-color: transparent;
     color: var(--result-text-color); /* Default black for text */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Default to column, can be overridden */
     justify-content: center;
     align-items: center;
     /* font-size and font-weight handled by .feedback-text or child elements */
@@ -121,14 +121,17 @@ button:disabled {
 /* Styles specific to intention result display - always white background */
 #intention-result {
      background-color: var(--result-bg-color); /* Always white background for intention result */
-     padding: 10px; /* Добавляем внутренний отступ */
-     box-sizing: border-box; /* Учитываем отступ в размере */
+     /* Убираем padding, чтобы фигура занимала всю доступную область */
+     padding: 0;
+     box-sizing: border-box;
 }
 
 /* SVG size for the Intention result display */
 #intention-result svg {
-    max-width: 100%; /* SVG займет 100% доступного места с учетом padding */
+    max-width: 100%; /* SVG займет 100% доступного места */
     max-height: 100%;
+    width: 100%; /* Убедимся, что svg растягивается */
+    height: 100%; /* Убедимся, что svg растягивается */
 }
 
 
@@ -218,37 +221,48 @@ button:disabled {
 .feedback-text {
     font-size: 20px; /* Увеличиваем размер текста до 20px */
     font-weight: bold;
-    /* Color set dynamically based on mode */
-    /* text-shadow and z-index removed as they are set in JS when needed */
+    /* Position text absolutely in the center */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Make sure text is above shape/background */
+    /* Color set dynamically in JS based on background */
+    /* text-shadow set dynamically in JS for color mode */
 }
 
-/* Style for the container of shape + text feedback */
+/* Style for the container of shape + white background feedback */
 .vision-feedback-content {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
     background-color: white; /* White background for shapes feedback */
     border-radius: 8px;
-    gap: 10px; /* Отступ между фигурой и текстом */
-    padding: 10px; /* Добавим внутренний отступ */
-    box-sizing: border-box; /* Учитываем отступ */
+    /* Убираем padding, чтобы фигура занимала всю доступную область */
+    padding: 0;
+    box-sizing: border-box;
 }
 
 /* Style specifically for the shape SVG when displayed as a result in Vision */
 .vision-feedback-content svg {
-     max-width: 100%; /* SVG займет 100% доступного места с учетом padding */
+     max-width: 100%; /* SVG займет 100% доступного места */
      max-height: 100%;
+     width: 100%; /* Убедимся, что svg растягивается */
+     height: 100%; /* Убедимся, что svg растягивается */
      fill: black; /* Убедимся, что фигура черная на белом фоне */
 }
 
 /* Ensure vision result display is flexible for centering its content */
+/* This container holds the feedback-content div and the feedback-text p */
 #vision-result {
-    display: flex;
+    display: flex; /* Already flex */
     justify-content: center;
     align-items: center;
     /* Background color is set dynamically in JS for color mode */
     background-color: transparent;
-    }
+}
+
+/* When in color mode, vision-result acts like intention-result for centering the text */
+/* But the background is set dynamically, so no specific style needed here other than defaults */
