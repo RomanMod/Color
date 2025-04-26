@@ -1,7 +1,7 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #2c2c2c; /* Dark Space Gray */
-    color: #e0e0e0; /* Light Gray text */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #2c2c2e; /* Space Gray background */
+    color: #e5e5ea; /* Light text color */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,162 +11,212 @@ body {
     box-sizing: border-box;
 }
 
-.container {
-    background-color: #3a3a3a; /* Slightly lighter gray for container */
+#app {
+    background-color: #3a3a3c; /* Slightly lighter container */
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     text-align: center;
-    max-width: 500px; /* Limit container width */
+    max-width: 600px;
     width: 100%;
     box-sizing: border-box;
 }
 
-h1, h2 {
-    color: #ffffff; /* White headings */
+h2 {
+    color: #f2f2f7; /* Lighter heading color */
+    margin-top: 0;
     margin-bottom: 20px;
 }
 
 #player-info {
-    color: #b0b0b0; /* Medium gray for player info */
-    margin-bottom: 20px;
     font-size: 1.1em;
+    margin-bottom: 20px;
+    color: #acaeb1; /* Slightly muted color */
 }
 
 button {
-    background-color: #555555; /* Medium gray buttons */
-    color: #ffffff;
+    font-size: 1em;
+    padding: 12px 20px;
+    margin: 5px;
     border: none;
     border-radius: 8px;
-    padding: 12px 20px;
-    margin: 8px;
-    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    min-width: 120px;
+    background-color: #007aff; /* Telegram Blue */
+    color: white;
+    transition: background-color 0.2s ease;
 }
 
-button:hover {
-    background-color: #666666; /* Lighter gray on hover */
-}
-
-button:active {
-    transform: scale(0.98);
+button:hover:not(:disabled) {
+    background-color: #005bb5;
 }
 
 button:disabled {
-    background-color: #444444;
-    color: #888888;
+    background-color: #5a5a5e; /* Muted gray when disabled */
     cursor: not-allowed;
+}
+
+#mode-selection-screen button {
+    display: block;
+    width: calc(100% - 10px); /* Adjust for margin */
+    margin: 10px 5px;
+    font-size: 1.2em;
+    padding: 15px;
+}
+
+.game-display {
+    width: 100%;
+    height: 200px; /* Large height */
+    background-color: #0d0d0d; /* Pure black */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    color: white; /* Default text color for display */
+    overflow: hidden; /* Prevent overflow for large SVGs */
+    box-sizing: border-box;
+    flex-direction: column; /* Allow stacking content and message */
+}
+
+.game-display svg {
+    max-width: 90%;
+    max-height: 90%;
+    fill: black; /* Black shapes */
+    background-color: white; /* White background for shape display */
+    padding: 10px; /* Padding around the shape */
+    border-radius: 8px;
+}
+
+.game-display .message {
+    font-size: 0.8em;
+    margin-top: 10px;
+    color: #ccc; /* Message color */
+}
+
+#intent-game-screen .game-display {
+     /* Specific styling for intent if needed, currently same */
+}
+
+#vision-game-screen .game-display {
+     /* Specific styling for vision if needed, currently same */
+}
+
+
+#show-intent-btn,
+#shuffle-vision-btn {
+    font-size: 1.3em;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.choice-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.choice-btn {
+    width: 120px; /* Large square-ish buttons */
+    height: 120px;
+    background-color: #5a5a5e; /* Light gray for choices */
+    color: #f2f2f7;
+    font-size: 1.1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #7a7a7d;
+}
+
+.choice-btn:hover:not(:disabled) {
+    background-color: #6a6a6e;
+    border-color: #9a9a9d;
+}
+
+.choice-btn svg {
+     max-width: 80px;
+     max-height: 80px;
+     fill: black; /* Black shapes on choice buttons */
+     background: none; /* No background for shape on button */
+     padding: 0;
+}
+
+
+#vision-stats {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #b0b0b5; /* Slightly muted stats color */
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #4a4a4c; /* Separator line */
+}
+
+.settings {
+    display: flex;
+    align-items: center;
+}
+
+.settings label {
+    margin-right: 10px;
+    color: #ccc;
+}
+
+.settings .setting-btn {
+     padding: 8px 15px;
+     font-size: 0.9em;
+     background-color: #5a5a5e; /* Gray for setting buttons */
+     color: #f2f2f7;
+}
+
+.settings .setting-btn.active {
+     background-color: #007aff; /* Active setting color */
+     color: white;
+}
+
+.back-btn {
+    background-color: #5a5a5e; /* Gray back button */
+    color: #f2f2f7;
+    padding: 8px 15px;
+    font-size: 0.9em;
+}
+
+.back-btn:hover:not(:disabled) {
+    background-color: #6a6a6e;
 }
 
 .hidden {
     display: none;
 }
 
-.game-mode-content {
-    margin-top: 20px;
+/* Styles for displaying colors directly on the display */
+.display-color-red {
+    background-color: red !important; /* Use important to override .game-display black */
+    color: white; /* Ensure text is visible on color background */
 }
 
-.large-display {
-    width: 100%;
-    max-width: 400px; /* Max width for display */
-    height: 250px; /* Large height for display */
-    background-color: #1c1c1c; /* Very dark gray for display background */
-    border: 2px solid #555555;
-    border-radius: 8px;
-    margin: 20px auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* Hide overflow for shapes/colors */
-    box-sizing: border-box;
-    font-size: 2em; /* For text messages like success */
-    color: #ffffff;
-    text-align: center;
+.display-color-blue {
+    background-color: blue !important;
+    color: white;
 }
 
-/* Style for SVG shapes inside the display */
-.large-display svg {
-    max-width: 90%;
-    max-height: 90%;
-    display: block; /* Remove extra space below svg */
-    margin: auto;
+.display-message {
+    font-size: 1em;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
-#vision-guess-buttons {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* Space between buttons */
+/* Styles for displaying results on display */
+.result-success {
+    color: lightgreen;
 }
 
-.guess-button {
-    flex-grow: 1; /* Allow buttons to grow */
-    max-width: 150px; /* Limit max width */
-    height: 60px; /* Make guess buttons taller */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 10px; /* Adjust padding */
-    box-sizing: border-box;
-    font-size: 1.2em; /* Larger text for guess buttons */
-}
-
-.guess-button.color-blue { background-color: #007bff; }
-.guess-button.color-red { background-color: #dc3545; }
-/* Add more color classes if needed for different button options */
-
-.guess-button svg {
-     max-width: 90%;
-     max-height: 90%;
-     display: block;
-}
-
-
-#vision-result-message {
-    font-size: 1.3em;
-    margin-top: 15px;
-    min-height: 1.5em; /* Reserve space */
-}
-
-#vision-stats {
-    margin-top: 20px;
-    text-align: left;
-    border-top: 1px solid #444444;
-    padding-top: 15px;
-    font-size: 0.9em;
-    color: #b0b0b0;
-}
-
-#vision-stats h2 {
-    font-size: 1.1em;
-    margin-bottom: 10px;
-    color: #ffffff;
-}
-
-#vision-stats p {
-    margin: 5px 0;
-}
-
-.game-controls {
-    margin-top: 30px;
-    border-top: 1px solid #444444;
-    padding-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.game-controls button {
-    margin: 0 5px; /* Adjust margin in controls */
-    flex-grow: 1;
-    max-width: 180px;
-}
-
-#toggle-game-type {
-     background-color: #007bff; /* Accent color for type switch */
-}
-#toggle-game-type:hover {
-     background-color: #0056b3;
+.result-fail {
+    color: orange;
     }
