@@ -1,9 +1,103 @@
-/* ... (предыдущие стили) ... */
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #333; /* Темно-серый фон */
+    color: #ccc; /* Светло-серый текст */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Выравнивание по верхнему краю */
+    min-height: 100vh;
+    box-sizing: border-box;
+}
 
-/* Стили для игры Цвет */
-#color-game-elements {
+#app {
+    background-color: #444; /* Чуть светлее серого для контейнера */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+#player-info {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    color: #bbb;
+}
+
+h2, h3, h4 {
+    color: #eee; /* Еще светлее для заголовков */
+}
+
+.screen {
+    display: none; /* Скрываем все экраны по умолчанию */
+}
+
+.screen.active {
+    display: block; /* Показываем активный экран */
+}
+
+.game-section {
+    display: none; /* Скрываем все секции игр/режимов по умолчанию */
+    flex-direction: column;
+    align-items: center;
+}
+.game-section.active {
+    display: flex; /* Показываем активную секцию */
+}
+
+
+.menu-buttons button,
+#mode-selection button,
+#color-game button:not(.color-red):not(.color-blue):not(.color-orange):not(.color-yellow):not(.color-green):not(.color-indigo):not(.color-violet), /* кнопки управления, исключая кнопки выбора */
+#symbols-game button:not(.choice-button-icon), /* кнопки управления символов */
+.back-button {
+    background-color: #555; /* Средне-серый для кнопок */
+    color: #eee;
+    border: none;
+    padding: 12px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+    min-width: 150px; /* Минимальная ширина для единообразия */
+}
+
+.menu-buttons {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Адаптивная сетка */
+     gap: 10px;
      margin-bottom: 20px;
-     min-height: 150px; /* Чтобы блок не "прыгал" при смене контента */
+}
+
+
+#mode-selection {
+    margin-bottom: 20px;
+}
+#mode-selection button {
+    font-size: 1.1em;
+    padding: 15px 25px;
+}
+
+
+button:hover {
+    background-color: #666;
+}
+
+button:disabled {
+    background-color: #444;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Стили для игровых элементов и их контейнеров */
+#color-game-elements,
+.game-mode-elements { /* Применяем к контейнерам элементов режима других игр */
+     margin-bottom: 20px;
+     min-height: 80px; /* Чтобы блок не "прыгал" при смене контента */
      display: flex;
      flex-direction: column;
      align-items: center;
@@ -11,7 +105,8 @@
 }
 
 #color-vision-elements,
-#color-intention-elements {
+#color-intention-elements,
+.game-mode-elements { /* Применяем к контейнерам элементов режима других игр */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -20,13 +115,17 @@
      min-height: 80px; /* Примерная высота кнопки + индикатор */
 }
 #color-vision-elements:not(.active),
-#color-intention-elements:not(.active) {
+#color-intention-elements:not(.active),
+.game-mode-elements:not(.active) {
     display: none;
 }
 
 
 #color-shuffle-button,
-#color-show-button {
+#color-show-button,
+#symbols-shuffle-button,
+#symbols-show-button /* Кнопки управления для символов */
+ {
      font-size: 1.2em;
      padding: 15px 30px;
      margin-bottom: 15px;
@@ -43,8 +142,8 @@
     display: block;
 }
 
-/* Стили для дисплея выявленного цвета в режиме Намерения */
-#color-revealed-color-display {
+/* Стили для дисплея выявленного значения в режиме Намерения */
+.revealed-display {
     font-size: 1.5em;
     font-weight: bold;
     padding: 15px;
@@ -53,10 +152,13 @@
     min-height: 1.8em; /* Чтобы избежать прыжков */
     display: none; /* Скрыто по умолчанию */
     color: #eee; /* Цвет текста по умолчанию */
+    background-color: #555; /* Фон дисплея */
+    width: fit-content; /* Ширина по содержимому */
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Стили для отображения самого цвета в дисплее (опционально) */
-/* Можно добавить background-color или border, если не просто текст */
+/* Стили для отображения самого цвета в дисплее Цвета */
 #color-revealed-color-display.revealed-red { background-color: #a03030; color: white;}
 #color-revealed-color-display.revealed-blue { background-color: #3030a0; color: white;}
 #color-revealed-color-display.revealed-orange { background-color: #d08030; color: white;}
@@ -65,6 +167,16 @@
 #color-revealed-color-display.revealed-indigo { background-color: #4b0082; color: white;}
 #color-revealed-color-display.revealed-violet { background-color: #9400d3; color: white;}
 
+/* Если дисплей содержит SVG (например, для символов) */
+.revealed-display.svg-display {
+     padding: 10px; /* Чуть меньше паддинг для иконок */
+}
+.revealed-display .svg-icon {
+    width: 40px; /* Размер иконки в дисплее */
+    height: 40px;
+    margin: 0; /* Убираем отступы внутри дисплея */
+}
+
 
 .choice-buttons {
     margin-top: 15px;
@@ -72,14 +184,21 @@
      display: flex;
      gap: 10px; /* Пространство между кнопками выбора */
      min-height: 60px; /* Примерная высота кнопок выбора */
+     justify-content: center; /* Центрируем кнопки */
 }
 
 .choice-buttons button {
     font-size: 1.1em;
     padding: 15px 25px;
-    flex-grow: 1; /* Кнопки занимают доступное место */
+    /* flex-grow: 1; /* Убрал, чтобы кнопки не растягивались всегда */
+    min-width: 100px; /* Минимальная ширина кнопок выбора */
+    display: flex; /* Для выравнивания содержимого (текст/svg) */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Стили кнопок выбора цвета */
 .choice-buttons button.color-red { background-color: #a03030; color: white; }
 .choice-buttons button.color-blue { background-color: #3030a0; color: white; }
 .choice-buttons button.color-orange { background-color: #d08030; color: white; }
@@ -87,6 +206,11 @@
 .choice-buttons button.color-green { background-color: #30a030; color: white; }
 .choice-buttons button.color-indigo { background-color: #4b0082; color: white; }
 .choice-buttons button.color-violet { background-color: #9400d3; color: white; }
+
+/* Стили кнопок выбора символов (с иконками) */
+.choice-buttons button.choice-button-icon {
+    padding: 10px; /* Меньше паддинг для кнопок с иконками */
+}
 
 
 .result {
@@ -109,4 +233,82 @@
     color: #F44336; /* Красный */
 }
 
-/* ... (остальные стили) ... */
+.stats {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #555;
+    text-align: left;
+     margin-bottom: 20px;
+     width: 100%; /* Статистика занимает всю ширину контейнера */
+     box-sizing: border-box; /* Включаем padding в ширину */
+}
+.stats h4 {
+    margin-top: 0;
+}
+.stats p {
+    margin: 5px 0;
+}
+
+.player-color-selection {
+     margin-top: 20px;
+     padding-top: 15px;
+     border-top: 1px solid #555;
+     text-align: left;
+     width: 100%;
+     box-sizing: border-box;
+}
+.player-color-selection h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.player-color-selection select {
+    background-color: #555;
+    color: #eee;
+    border: 1px solid #666;
+    padding: 8px;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+/* Кнопка назад */
+.back-button {
+    margin-top: 20px;
+    background-color: #666;
+}
+.back-button:hover {
+     background-color: #777;
+}
+
+
+/* Стили для SVG (пример: черный круг и треугольник) */
+.svg-icon {
+    display: inline-block;
+    width: 50px; /* Размер иконки */
+    height: 50px;
+    /* margin: 10px; /* Убрал общий отступ */
+    vertical-align: middle; /* Для выравнивания в строке, если используется */
+}
+.svg-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+/* SVG цвета (должны быть черными или очень темно-серыми) */
+.svg-icon svg path,
+.svg-icon svg circle,
+.svg-icon svg polygon,
+.svg-icon svg rect {
+    fill: #222; /* Очень темный серый, почти черный */
+     stroke: #888; /* Серый контур, чтобы было видно на темном фоне */
+     stroke-width: 1;
+}
+
+/* Если SVG используются как кнопки */
+.choice-buttons button .svg-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 5px auto; /* Центрировать и добавить отступ снизу */
+    display: block;
+}
