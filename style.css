@@ -107,7 +107,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--result-bg-color);
+    background-color: var(--result-bg-color); /* Default white for intention/shapes */
     color: var(--result-text-color);
     display: flex;
     flex-direction: column;
@@ -118,10 +118,16 @@ button:disabled {
     border-radius: 8px; /* Унаследуем от display */
 }
 
-.result-display svg {
+/* Styles specific to intention result display */
+#intention-result {
+     background-color: var(--result-bg-color); /* Always white background for intention result */
+}
+
+#intention-result svg {
     max-width: 80%; /* Размер фигур */
     max-height: 80%;
 }
+
 
 .controls {
     display: flex;
@@ -158,19 +164,20 @@ button:disabled {
 #vision-choices {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Отступ между кнопками выбора */
+    gap: 20px; /* Увеличим отступ между крупными кнопками */
     margin-top: 15px;
 }
 
 .choice-btn {
-    width: 80px; /* Размер квадратных кнопок */
-    height: 80px;
+    width: 100px; /* Сделаем кнопки крупнее */
+    height: 100px; /* Сделаем кнопки крупнее */
     border-radius: 8px;
     padding: 0; /* Убрать внутренние отступы */
     display: flex; /* Для центрирования SVG */
     justify-content: center;
     align-items: center;
     border: 2px solid var(--border-color); /* Небольшая граница */
+    box-sizing: border-box; /* Учитываем границу в размере */
 }
 
 .color-btn[data-choice="red"] {
@@ -187,8 +194,8 @@ button:disabled {
 }
 
 .shape-btn svg {
-     width: 80%; /* Размер SVG внутри кнопки */
-     height: 80%;
+     width: 90%; /* Размер SVG внутри кнопки */
+     height: 90%;
      fill: var(--result-text-color); /* Черный цвет фигуры */
 }
 
@@ -202,4 +209,41 @@ button:disabled {
 
 #vision-stats p {
     margin: 5px 0;
+}
+
+/* Style for the feedback text shown over the result */
+.feedback-text {
+    font-size: 2em; /* Сделаем текст по центру крупнее */
+    font-weight: bold;
+    color: white; /* Белый текст для лучшей видимости на цветном фоне */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Тень для контраста */
+    z-index: 1; /* Убедимся, что текст поверх цвета/фигуры */
+}
+
+/* Style for the container of shape + text feedback */
+.vision-feedback-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: white; /* Белый фон для фигур */
+    border-radius: 8px;
+    gap: 10px; /* Отступ между фигурой и текстом */
+}
+
+/* Ensure vision result display is flexible for centering */
+#vision-result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Background color is set dynamically in JS for color mode */
+    background-color: transparent;
+}
+
+/* Style specifically for the shape SVG when displayed as a result in Vision */
+#vision-result svg {
+     max-width: 60%; /* Фигура на дисплее должна быть не на весь экран */
+     max-height: 60%;
     }
