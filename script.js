@@ -277,12 +277,8 @@ function handleVisionChoice(event) { // Accept event object
     visionResultDisplay.innerHTML = '';
     visionResultDisplay.style.backgroundColor = 'transparent'; // Reset background
 
-    let messageText = document.createElement('p');
-    messageText.classList.add('feedback-text'); // Add class for styling
-
-    // Determine feedback text
+    // Determine feedback text (but only create/append if needed for color mode)
     const isCorrect = (choice === visionCurrentResult);
-    messageText.textContent = isCorrect ? 'Успех!' : 'Попробуй ещё!';
 
     if (isCorrect) {
         visionStats.successes++;
@@ -297,6 +293,9 @@ function handleVisionChoice(event) { // Accept event object
         // In color mode, the correct color fills the background of visionResultDisplay
         visionResultDisplay.style.backgroundColor = visionCurrentResult; // 'red' or 'blue'
         // Set text color for visibility on the colored background
+        let messageText = document.createElement('p');
+        messageText.classList.add('feedback-text'); // Add class for styling
+        messageText.textContent = isCorrect ? 'Успех!' : 'Попробуй ещё!'; // Set text content
         messageText.style.color = 'white';
         messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
 
@@ -309,7 +308,7 @@ function handleVisionChoice(event) { // Accept event object
 
 
     } else { // shape mode
-        // In shape mode, display shape on white background + text overlaid
+        // In shape mode, display shape on white background. No text feedback on screen.
         const feedbackContent = document.createElement('div');
         feedbackContent.classList.add('vision-feedback-content'); // Container for shape + white background
         feedbackContent.style.backgroundColor = 'white'; // White background specifically for this content block
@@ -317,16 +316,11 @@ function handleVisionChoice(event) { // Accept event object
         // Create and append the correct shape SVG
         feedbackContent.appendChild(createSvgShape(visionCurrentResult));
 
-        // Set text color for visibility on the white background
-        messageText.style.color = 'black';
-        messageText.style.textShadow = 'none'; // No shadow needed on white
-
-        // Append *both* the background/shape container AND the text directly to visionResultDisplay
-        visionResultDisplay.appendChild(feedbackContent); // The shape/background
-        visionResultDisplay.appendChild(messageText); // Text is layered on top via absolute positioning
+        // Append only the background/shape container to visionResultDisplay
+        visionResultDisplay.appendChild(feedbackContent);
 
          // Ensure visionResultDisplay allows for layering (flex properties already in CSS)
-         // No specific flex-direction or gap needed here as text is absolute
+         // No specific flex-direction or gap needed here as text is absolute (but text isn't present)
          visionResultDisplay.style.flexDirection = 'row'; // Reset or keep default
          visionResultDisplay.style.gap = '0';
     }
