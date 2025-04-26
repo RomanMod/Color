@@ -244,13 +244,15 @@ function setVisionChoiceButtonsEnabled(enabled) {
     });
 }
 
-function handleVisionChoice(choice) {
+function handleVisionChoice(event) { // Accept event object
     // Check if a valid, enabled choice button was clicked
     const targetBtn = event.target.closest('.choice-btn');
     if (visionCurrentResult === null || !targetBtn || targetBtn.disabled) {
         // Player clicked before shuffle finished, after guess, or on a disabled button
         return;
     }
+
+    const choice = targetBtn.dataset.choice; // Get choice from data attribute
 
     // Disable choice buttons immediately after a guess
     setVisionChoiceButtonsEnabled(false);
@@ -277,16 +279,19 @@ function handleVisionChoice(choice) {
         visionResultDisplay.style.backgroundColor = visionCurrentResult; // 'red' or 'blue'
         // Set text color for visibility on the colored background
         messageText.style.color = 'white';
-         messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
+        messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
+
+        // Ensure visionResultDisplay is set up for centering just the text
+         visionResultDisplay.style.flexDirection = 'column'; // Center vertically and horizontally
+         visionResultDisplay.style.gap = '0'; // No gap needed
+
         // Text is simply added centered on top
         visionResultDisplay.appendChild(messageText);
-        // Ensure flex settings are for simple centering
-        visionResultDisplay.style.flexDirection = 'column'; // Still column for consistency/centering
-        visionResultDisplay.style.gap = '0'; // No gap when just text on background
+
     } else { // shape mode
-        // In shape mode, display shape on white background + text below
+        // In shape mode, display shape on white background + text overlaid
         const feedbackContent = document.createElement('div');
-        feedbackContent.classList.add('vision-feedback-content'); // Container for shape + text
+        feedbackContent.classList.add('vision-feedback-content'); // Container for shape + white background
         feedbackContent.style.backgroundColor = 'white'; // White background specifically for this content block
 
         // Create and append the correct shape SVG
@@ -296,13 +301,15 @@ function handleVisionChoice(choice) {
         messageText.style.color = 'black';
         messageText.style.textShadow = 'none'; // No shadow needed on white
 
-        // Add the text below the shape
-        feedbackContent.appendChild(messageText);
+        // Append *both* the background/shape container AND the text directly to visionResultDisplay
+        visionResultDisplay.appendChild(feedbackContent);
+        visionResultDisplay.appendChild(messageText);
 
-        visionResultDisplay.appendChild(feedbackContent); // Add the container to the display
-        // Ensure flex settings are for centering the container
-        visionResultDisplay.style.flexDirection = 'column';
-        visionResultDisplay.style.gap = '0';
+        // Ensure visionResultDisplay is set up for centering BOTH items (feedbackContent and messageText)
+        // feedbackContent will take up all space due to its size/padding=0
+        // messageText is absolutely positioned via CSS
+         visionResultDisplay.style.flexDirection = 'row'; // Use row or column, doesn't matter much due to absolute text
+         visionResultDisplay.style.gap = '0';
     }
 
     updateVisionStatsDisplay();
