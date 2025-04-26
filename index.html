@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра Telegram Mini App</title>
+    <title>Рандомайзер Игра</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Подключение Telegram Web Apps API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="app">
-        <div id="player-info"></div>
+    <div class="app-container">
 
-        <!-- Экран выбора режима -->
-        <div id="mode-selection-screen">
-            <h2>Выберите режим игры</h2>
-            <button id="select-intent-mode">Намеренье</button>
-            <button id="select-vision-mode">Виденье</button>
-        </div>
+        <header>
+            <p id="user-name"></p>
+            <h1 id="game-title">Выберите игру</h1>
+        </header>
 
-        <!-- Экран игры "Намеренье" -->
-        <div id="intent-game-screen" class="hidden">
-            <h2>Намеренье</h2>
-            <div id="intent-display" class="game-display">
-                <!-- Здесь будет отображаться результат -->
-            </div>
-            <button id="show-intent-btn">Показать</button>
+        <!-- Главное меню -->
+        <section id="main-menu" class="game-section active">
+            <button id="btn-namerenie">Намеренье</button>
+            <button id="btn-videnie">Виденье</button>
+        </section>
 
-            <div class="controls">
-                <div class="settings">
-                    <label>Тип:</label>
-                    <button class="setting-btn" data-type="color" data-mode="intent">Цвет</button>
-                    <button class="setting-btn active" data-type="shape" data-mode="intent">Фигура</button>
-                </div>
-                <button class="back-btn">Назад</button>
+        <!-- Игра Намеренье -->
+        <section id="namerenie-game" class="game-section">
+            <div id="namerenie-display" class="display">
+                <!-- Результат рандомайзера будет здесь -->
             </div>
-        </div>
-
-        <!-- Экран игры "Виденье" -->
-        <div id="vision-game-screen" class="hidden">
-            <h2>Виденье</h2>
-            <button id="shuffle-vision-btn">Перемешать</button>
-            <div id="vision-display" class="game-display">
-                 <!-- Здесь будет отображаться результат угадывания -->
-            </div>
-            <div class="choice-buttons">
-                <button class="choice-btn" data-choice-value=""></button>
-                <button class="choice-btn" data-choice-value=""></button>
-            </div>
-            <div id="vision-stats">
-                Попыток: <span id="stats-attempts">0</span> |
-                Успешных: <span id="stats-wins">0</span> |
-                Неуспешных: <span id="stats-losses">0</span>
-            </div>
+            <button id="btn-namerenie-show">Показать</button>
 
             <div class="controls">
-                 <div class="settings">
-                    <label>Тип:</label>
-                    <button class="setting-btn" data-type="color" data-mode="vision">Цвет</button>
-                    <button class="setting-btn active" data-type="shape" data-mode="vision">Фигура</button>
+                <div class="setting">
+                    <span>Выбор:</span>
+                    <label><input type="radio" name="namerenie-setting" value="color" checked> Цвет</label>
+                    <label><input type="radio" name="namerenie-setting" value="shape"> Фигура</label>
                 </div>
-                <button class="back-btn">Назад</button>
+                <button class="btn-back">Назад</button>
             </div>
-        </div>
+        </section>
+
+        <!-- Игра Виденье -->
+        <section id="videnie-game" class="game-section">
+            <button id="btn-videnie-shuffle" class="large-button">Перемешать</button>
+            <div id="videnie-display" class="display large">
+                <!-- Результат угадывания будет здесь -->
+                <p id="videnie-result-text"></p>
+            </div>
+            <div id="videnie-guess-buttons" class="guess-buttons">
+                <!-- Кнопки для угадывания будут здесь -->
+            </div>
+
+            <div class="stats">
+                <h3>Статистика</h3>
+                <p>Попыток: <span id="stats-attempts">0</span></p>
+                <p>Успешных: <span id="stats-successful">0</span></p>
+                <p>Неуспешные: <span id="stats-unsuccessful">0</span></p>
+            </div>
+
+             <div class="controls">
+                 <div class="setting">
+                    <span>Выбор:</span>
+                    <label><input type="radio" name="videnie-setting" value="color" checked> Цвет</label>
+                    <label><input type="radio" name="videnie-setting" value="shape"> Фигура</label>
+                </div>
+                <button class="btn-back">Назад</button>
+            </div>
+        </section>
+
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="script.js"></script>
 </body>
     </html>
