@@ -3,100 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интуитивные Игры</title>
+    <title>Game Mini App</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключение Telegram Web Apps API -->
+    <!-- Подключаем Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <div class="app-container">
-        <h1 id="player-greeting">Привет!</h1>
+    <div id="app">
+        <div id="player-info"></div>
 
-        <!-- Главное Меню -->
-        <section id="main-menu" class="game-section active">
-            <h2>Главное Меню</h2>
-            <button class="menu-button" data-game="color">Цвет</button>
-            <button class="menu-button" data-game="symbols">Символы</button>
-            <button class="menu-button" data-game="keys">Ключ</button>
-            <button class="menu-button" data-game="coins">Монеты</button>
-            <button class="menu-button" data-game="dice">Кубик</button>
-        </section>
+        <!-- Главное меню -->
+        <div id="main-menu" class="screen active">
+            <h2>Выберите игру</h2>
+            <div class="menu-buttons">
+                <button data-game="color">Цвет</button>
+                <button data-game="symbols">Символы</button>
+                <button data-game="key">Ключ</button>
+                <button data-game="coins">Монеты</button>
+                <button data-game="dice">Кубик</button>
+            </div>
+        </div>
 
-        <!-- Раздел Игры (Общий шаблон) -->
-        <section id="game-area" class="game-section hidden">
-            <h2 id="game-title">Название Игры</h2>
-
-            <!-- Выбор Режима -->
-            <div id="mode-selection">
-                <h3>Выберите режим:</h3>
-                <button id="mode-vision-btn">Видение</button>
-                <button id="mode-intention-btn">Намерение</button>
-                 <button class="back-button" data-target="main-menu">Назад в Меню</button>
+        <!-- Область для игр -->
+        <div id="game-area" class="screen">
+            <!-- Выбор режима -->
+            <div id="mode-selection" class="game-section active">
+                <h2>Выберите режим</h2>
+                <button data-mode="intention" id="mode-intention-btn">Намерение</button>
+                <button data-mode="vision" id="mode-vision-btn">Виденье</button>
             </div>
 
-            <!-- Игровая Зона -->
-            <div id="game-content" class="hidden">
-                <p>Режим: <span id="current-mode-display"></span></p>
+            <!-- Игра: Цвет -->
+            <div id="color-game" class="game-section">
+                <h3>Игра: Цвет (<span id="color-current-mode"></span>)</h3>
 
-                <!-- Элементы для "Видения" -->
-                <div id="vision-controls" class="mode-controls hidden">
-                    <button id="vision-randomize-btn">Перемешать</button>
-                    <p id="vision-randomizing-text" class="hidden">Перемешиваем...</p>
-                </div>
-
-                 <!-- Элементы для "Намерения" -->
-                <div id="intention-controls" class="mode-controls hidden">
-                     <div id="intention-randomizer-display"></div> <!-- Показ текущего случайного значения -->
-                     <button id="intention-show-btn" class="hidden">Показать</button>
-                     <p id="intention-waiting-text" class="hidden">Генерация...</p>
-                </div>
-
-                <!-- Зона Выбора Игрока -->
-                <div id="player-choice-area" class="hidden">
-                    <p>Ваш выбор:</p>
-                    <div id="choice-buttons">
-                        <!-- Кнопки выбора будут добавлены динамически -->
+                <div id="color-game-elements">
+                    <!-- Элементы для Виденья -->
+                    <div id="color-vision-elements">
+                         <button id="color-shuffle-button">Перемешать цвета (2с)</button>
+                         <div id="color-shuffling-indicator" class="indicator">Перемешивание...</div>
                     </div>
-                </div>
 
-                <!-- Результат -->
-                <div id="result-area" class="hidden">
-                    <p>Результат: <span id="result-value"></span></p>
-                    <p id="result-message"></p>
-                </div>
-
-                 <!-- Статистика -->
-                <div id="stats-area">
-                    <h3>Статистика (<span id="stats-game-name"></span>):</h3>
-                    <p>Попыток: <span id="stats-attempts">0</span></p>
-                    <p>Успешных: <span id="stats-success">0</span></p>
-                    <p>Неудачных: <span id="stats-fail">0</span></p>
-                </div>
-
-                <!-- Настройки (только для Цвета) -->
-                <div id="color-settings" class="hidden">
-                    <button id="change-color-btn">Выбрать цвета</button>
-                    <div id="color-picker" class="hidden">
-                        <p>Выберите два цвета:</p>
-                        <div class="color-options">
-                            <button class="color-option" data-color="red" style="background-color: red;"></button>
-                            <button class="color-option" data-color="orange" style="background-color: orange;"></button>
-                            <button class="color-option" data-color="yellow" style="background-color: yellow;"></button>
-                            <button class="color-option" data-color="green" style="background-color: green;"></button>
-                            <button class="color-option" data-color="blue" style="background-color: blue;"></button>
-                            <button class="color-option" data-color="indigo" style="background-color: indigo;"></button>
-                            <button class="color-option" data-color="violet" style="background-color: violet;"></button>
-                        </div>
-                         <p>Выбрано: <span id="selected-colors-display">Красный, Синий</span></p>
+                     <!-- Элементы для Намерения -->
+                    <div id="color-intention-elements">
+                        <button id="color-show-button">Показать Цвет</button>
+                        <div id="color-randomizing-indicator" class="indicator">Намерение активно...</div>
                     </div>
+
+                    <!-- Общие элементы игры Цвет -->
+                    <div id="color-choice-buttons" class="choice-buttons">
+                        <!-- Кнопки выбора цвета будут добавлены JS -->
+                    </div>
+
+                     <div id="color-result" class="result"></div>
                 </div>
 
-                 <!-- Кнопка Назад в игре -->
-                <button class="back-button" id="game-back-button">Назад</button>
+
+                <!-- Статистика -->
+                <div class="stats">
+                    <h4>Статистика</h4>
+                    <p>Попытки: <span id="color-stats-attempts">0</span></p>
+                    <p>Успешных: <span id="color-stats-wins">0</span></p>
+                    <p>Не успешные: <span id="color-stats-losses">0</span></p>
+                </div>
+
+                 <!-- Выбор цветов игроком -->
+                <div class="player-color-selection">
+                    <h4>Ваши цвета для выбора:</h4>
+                    <select id="player-color-1"></select>
+                    <select id="player-color-2"></select>
+                </div>
+
+
+                <button class="back-button">Назад</button>
             </div>
-        </section>
 
+            <!-- Тут будут секции для других игр по аналогии -->
+            <div id="symbols-game" class="game-section">
+                 <h3>Игра: Символы (<span id="symbols-current-mode"></span>)</h3>
+                 <!-- Элементы игры Символы -->
+                 <p>Эта игра пока не реализована.</p>
+                 <button class="back-button">Назад</button>
+            </div>
+             <div id="key-game" class="game-section">
+                 <h3>Игра: Ключ (<span id="key-current-mode"></span>)</h3>
+                  <!-- Элементы игры Ключ -->
+                 <p>Эта игра пока не реализована.</p>
+                 <button class="back-button">Назад</button>
+            </div>
+             <div id="coins-game" class="game-section">
+                 <h3>Игра: Монеты (<span id="coins-current-mode"></span>)</h3>
+                  <!-- Элементы игры Монеты -->
+                 <p>Эта игра пока не реализована.</p>
+                 <button class="back-button">Назад</button>
+            </div>
+             <div id="dice-game" class="game-section">
+                 <h3>Игра: Кубик (<span id="dice-current-mode"></span>)</h3>
+                  <!-- Элементы игры Кубик -->
+                 <p>Эта игра пока не реализована.</p>
+                 <button class="back-button">Назад</button>
+            </div>
+
+        </div>
     </div>
 
     <script src="script.js"></script>
