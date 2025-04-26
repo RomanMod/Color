@@ -3,49 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini Game</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Игра Telegram Mini App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div id="player-info">Привет, <span id="player-name">Игрок</span>!</div>
+    <div id="app">
+        <div id="player-info"></div>
 
-        <div id="mode-selection">
-            <h1>Выберите режим игры</h1>
-            <button id="select-intention">Намеренье</button>
-            <button id="select-vision">Виденье</button>
+        <!-- Экран выбора режима -->
+        <div id="mode-selection-screen">
+            <h2>Выберите режим игры</h2>
+            <button id="select-intent-mode">Намеренье</button>
+            <button id="select-vision-mode">Виденье</button>
         </div>
 
-        <div id="game-area" class="hidden">
-            <div id="intention-mode" class="game-mode-content hidden">
-                <div class="large-display" id="intention-display"></div>
-                <button id="intention-show-btn">Показать</button>
+        <!-- Экран игры "Намеренье" -->
+        <div id="intent-game-screen" class="hidden">
+            <h2>Намеренье</h2>
+            <div id="intent-display" class="game-display">
+                <!-- Здесь будет отображаться результат -->
+            </div>
+            <button id="show-intent-btn">Показать</button>
+
+            <div class="controls">
+                <div class="settings">
+                    <label>Тип:</label>
+                    <button class="setting-btn" data-type="color" data-mode="intent">Цвет</button>
+                    <button class="setting-btn active" data-type="shape" data-mode="intent">Фигура</button>
+                </div>
+                <button class="back-btn">Назад</button>
+            </div>
+        </div>
+
+        <!-- Экран игры "Виденье" -->
+        <div id="vision-game-screen" class="hidden">
+            <h2>Виденье</h2>
+            <button id="shuffle-vision-btn">Перемешать</button>
+            <div id="vision-display" class="game-display">
+                 <!-- Здесь будет отображаться результат угадывания -->
+            </div>
+            <div class="choice-buttons">
+                <button class="choice-btn" data-choice-value=""></button>
+                <button class="choice-btn" data-choice-value=""></button>
+            </div>
+            <div id="vision-stats">
+                Попыток: <span id="stats-attempts">0</span> |
+                Успешных: <span id="stats-wins">0</span> |
+                Неуспешных: <span id="stats-losses">0</span>
             </div>
 
-            <div id="vision-mode" class="game-mode-content hidden">
-                <button id="vision-shuffle-btn">Перемешать</button>
-                <div class="large-display" id="vision-display"></div>
-                <div id="vision-guess-buttons">
-                    <button class="guess-button" id="vision-guess-btn-1"></button>
-                    <button class="guess-button" id="vision-guess-btn-2"></button>
+            <div class="controls">
+                 <div class="settings">
+                    <label>Тип:</label>
+                    <button class="setting-btn" data-type="color" data-mode="vision">Цвет</button>
+                    <button class="setting-btn active" data-type="shape" data-mode="vision">Фигура</button>
                 </div>
-                <div id="vision-result-message"></div>
-                <div id="vision-stats">
-                    <h2>Статистика:</h2>
-                    <p>Попыток: <span id="stats-attempts">0</span></p>
-                    <p>Успешных: <span id="stats-wins">0</span></p>
-                    <p>Неуспешных: <span id="stats-losses">0</span></p>
-                </div>
-            </div>
-
-            <div class="game-controls">
-                <button id="toggle-game-type">Тип: Цвет</button>
-                <button id="back-to-modes">Назад</button>
+                <button class="back-btn">Назад</button>
             </div>
         </div>
     </div>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
