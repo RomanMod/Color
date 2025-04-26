@@ -23,6 +23,9 @@ const userNameSpan = document.getElementById('telegram-user-name');
 const menuScreen = document.getElementById('menu-screen');
 const btnStartIntention = document.getElementById('btn-start-intention');
 const btnStartVision = document.getElementById('btn-start-vision');
+const btnReadMore = document.getElementById('btn-read-more'); // Новая кнопка "Прочти"
+const readMoreArea = document.getElementById('read-more-area'); // Область с текстом "Отличие"
+const btnCloseReadMore = document.getElementById('btn-close-read-more'); // Кнопка "Закрыть"
 
 // Intention Game Elements
 const gameIntention = document.getElementById('game-intention');
@@ -59,10 +62,13 @@ function showScreen(screenId) {
     stopIntentionGame();
     stopVisionGame(); // Stop any active shuffle timeout
 
-    if (screenId === 'menu-screen') {
+    // Hide read more area and show read more button when returning to menu
+     if (screenId === 'menu-screen') {
         menuScreen.classList.remove('hidden');
         currentGameMode = 'menu';
          Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
+        readMoreArea.classList.add('hidden'); // Hide text area
+        btnReadMore.classList.remove('hidden'); // Show "Прочти" button
     } else if (screenId === 'game-intention') {
         gameIntention.classList.remove('hidden');
         currentGameMode = 'intention';
@@ -81,11 +87,7 @@ function showScreen(screenId) {
          visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result display background
          visionCurrentResult = null; // Clear any pending result
 
-         // Optionally show a Telegram Main Button for Shuffle?
-         // Telegram.WebApp.MainButton.setText('Перемешать');
-         // Telegram.WebApp.MainButton.show();
-         // Telegram.WebApp.onEvent('mainButtonClicked', startVisionShuffle);
-         // Note: Using a standard HTML button is usually fine and gives more control over styling/disabling.
+         Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
     }
 }
 
@@ -168,14 +170,14 @@ function showIntentionResult() {
          colorBlock.style.height = '100%';
          colorBlock.style.backgroundColor = intentionCurrentResult;
          intentionResultDisplay.appendChild(colorBlock);
-         // Ensure Intention result display is centered for color block
+         // Ensure Intention result display is centered for color block (CSS handles flex)
          intentionResultDisplay.style.flexDirection = 'row'; // Use row or column, doesn't matter for one block
          intentionResultDisplay.style.gap = '0';
 
     } else { // shape
         // For shape, show the shape on the white background
         intentionResultDisplay.appendChild(createSvgShape(intentionCurrentResult));
-        // Ensure Intention result display is centered for shape
+        // Ensure Intention result display is centered for shape (CSS handles flex)
          intentionResultDisplay.style.flexDirection = 'column'; // Flex properties from CSS are enough here
          intentionResultDisplay.style.gap = '0';
     }
@@ -298,7 +300,7 @@ function handleVisionChoice(event) { // Accept event object
         messageText.style.color = 'white';
         messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
 
-        // Append just the text to visionResultDisplay
+        // Append just the text to visionResultDisplay (absolute position via CSS)
         visionResultDisplay.appendChild(messageText);
 
         // Ensure visionResultDisplay is set up for centering just the text (flex properties already in CSS)
@@ -320,7 +322,7 @@ function handleVisionChoice(event) { // Accept event object
         messageText.style.textShadow = 'none'; // No shadow needed on white
 
         // Append *both* the background/shape container AND the text directly to visionResultDisplay
-        visionResultDisplay.appendChild(feedbackContent);
+        visionResultDisplay.appendChild(feedbackContent); // The shape/background
         visionResultDisplay.appendChild(messageText); // Text is layered on top via absolute positioning
 
          // Ensure visionResultDisplay allows for layering (flex properties already in CSS)
@@ -371,6 +373,19 @@ function updateVisionChoicesDisplay() {
 // Menu buttons
 btnStartIntention.addEventListener('click', () => showScreen('game-intention'));
 btnStartVision.addEventListener('click', () => showScreen('game-vision'));
+
+// "Read More" button
+btnReadMore.addEventListener('click', () => {
+    readMoreArea.classList.remove('hidden'); // Show the text area
+    btnReadMore.classList.add('hidden'); // Hide the "Прочти" button
+});
+
+// "Close Read More" button
+btnCloseReadMore.addEventListener('click', () => {
+    readMoreArea.classList.add('hidden'); // Hide the text area
+    btnReadMore.classList.remove('hidden'); // Show the "Прочти" button
+});
+
 
 // Back buttons (in games)
 backButtons.forEach(button => {
