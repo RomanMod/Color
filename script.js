@@ -64,6 +64,7 @@ const colorShuffleButton = document.getElementById('color-shuffle-button');
 const colorShowButton = document.getElementById('color-show-button');
 const colorShufflingIndicator = document.getElementById('color-shuffling-indicator');
 const colorRandomizingIndicator = document.getElementById('color-randomizing-indicator');
+const colorRevealedColorDisplay = document.getElementById('color-revealed-color-display'); // Новый элемент
 const colorChoiceButtonsDiv = document.getElementById('color-choice-buttons');
 const colorResultDiv = document.getElementById('color-result');
 const colorStatsAttemptsSpan = document.getElementById('color-stats-attempts');
@@ -94,14 +95,20 @@ function showGameSection(sectionId, gameType) {
     stopCurrentGameLogic();
     currentGame = gameType; // Устанавливаем текущую игру
     currentMode = null; // Сбрасываем режим при переходе в выбор режима
+
+     // Скрываем все игровые элементы и индикаторы при переходе в выбор режима
+     colorVisionElements.classList.remove('active');
+     colorIntentionElements.classList.remove('active');
+     colorShufflingIndicator.classList.remove('active');
+     colorRandomizingIndicator.classList.remove('active');
+     colorRevealedColorDisplay.style.display = 'none';
+     colorChoiceButtonsDiv.style.display = 'none';
+     colorResultDiv.style.display = 'none';
 }
 
 function showMenu() {
     showScreen('main-menu');
     showGameSection('mode-selection', null); // Возвращаемся к выбору игры, сбрасываем текущую игру
-    currentGame = null;
-    currentMode = null;
-     stopCurrentGameLogic(); // Останавливаем любую активную игровую логику
 }
 
 function startGame(gameType) {
@@ -114,8 +121,11 @@ function selectMode(mode) {
     if (!currentGame) return; // Должна быть выбрана игра
     currentMode = mode;
 
-    // Показываем нужную секцию игры и скрываем выбор режима
-    showGameSection(`${currentGame}-game`, currentGame);
+    // Показываем нужную секцию игры
+    document.getElementById(`${currentGame}-game`).classList.add('active');
+    // Скрываем выбор режима
+    modeSelectionSection.classList.remove('active');
+
 
     // Настраиваем игру в зависимости от режима
     setupGame(currentGame, currentMode);
@@ -126,8 +136,13 @@ function setupGame(gameType, mode) {
     document.getElementById(`${gameType}-current-mode`).textContent = mode === 'intention' ? 'Намерение' : 'Виденье';
 
     // Сброс результатов и кнопок выбора
-     document.getElementById(`${gameType}-result`).textContent = '';
-     document.getElementById(`${gameType}-choice-buttons`).innerHTML = ''; // Очищаем кнопки выбора
+    document.getElementById(`${gameType}-result`).textContent = '';
+    document.getElementById(`${gameType}-result`).classList.remove('active', 'success', 'failure');
+    document.getElementById(`${gameType}-revealed-color-display`).textContent = '';
+    document.getElementById(`${gameType}-revealed-color-display`).style.display = 'none';
+    document.getElementById(`${gameType}-choice-buttons`).innerHTML = ''; // Очищаем кнопки выбора
+     document.getElementById(`${gameType}-choice-buttons`).style.display = 'none';
+
 
     // Обновляем статистику для текущей игры
     updateStatsDisplay(gameType);
@@ -169,19 +184,26 @@ function setupColorGame(mode) {
     colorShuffleButton.disabled = false;
     colorShowButton.disabled = false;
 
+    // Скрываем дисплей выявленного цвета и кнопки выбора при старте игры
+     colorRevealedColorDisplay.style.display = 'none';
+     colorChoiceButtonsDiv.style.display = 'none';
+     colorResultDiv.classList.remove('active');
+
 
     if (mode === 'vision') {
         colorVisionElements.classList.add('active');
+        colorShuffleButton.disabled = false;
+         colorShowButton.disabled = true; // Кнопка "Показать" не нужна в Виденьи
     } else { // intention
         colorIntentionElements.classList.add('active');
+        colorShuffleButton.disabled = true; // Кнопка "Перемешать" не нужна в Намерении
+        colorShowButton.disabled = false;
         // Запускаем постоянный рандомайзер для Намерения
         startIntentionColorRandomizer();
     }
 
-    // Отображаем кнопки выбора цветов игрока
+    // Отображаем кнопки выбора цветов игрока (но скрываем сам div)
     renderColorChoiceButtons();
-    // Скрываем кнопки выбора до начала раунда
-    colorChoiceButtonsDiv.style.display = 'none';
 
     // Устанавливаем выбранные игроком цвета по умолчанию в селекты при загрузке игры
     populateColorSelectors();
@@ -208,7 +230,7 @@ function renderColorChoiceButtons() {
             button.textContent = color.name;
             button.classList.add(color.className);
             button.setAttribute('data-choice', color.value);
-            button.addEventListener('click', () => makeColorChoice(color.value));
+             // Обработчик клика будет добавлен позже, когда кнопки будут активны
             colorChoiceButtonsDiv.appendChild(button);
         }
     });
@@ -225,7 +247,8 @@ function getRandomColorValue() {
 function shuffleColors() {
     colorShuffleButton.disabled = true;
     colorShufflingIndicator.classList.add('active');
-    colorResultDiv.textContent = '';
+    colorResultDiv.classList.remove('active');
+    colorRevealedColorDisplay.style.display = 'none'; // Скрываем все другие дисплеи
     colorChoiceButtonsDiv.style.display = 'none'; // Скрываем кнопки пока идет перемешивание
 
     // Запускаем рандомайзер и ждем 2 секунды
@@ -234,19 +257,33 @@ function shuffleColors() {
         colorShufflingIndicator.classList.remove('active');
         // Показываем кнопки выбора
         colorChoiceButtonsDiv.style.display = 'flex';
-        colorChoiceButtonsDiv.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        colorChoiceButtonsDiv.querySelectorAll('button').forEach(btn => {
+             btn.disabled = false;
+             btn.removeEventListener('click', handleColorChoiceVision); // Удаляем старый, если есть
+             btn.addEventListener('click', handleColorChoiceVision); // Добавляем новый
+         });
 
     }, 2000);
 }
 
+// Обработчик выбора для режима Виденья
+function handleColorChoiceVision(event) {
+    const choice = event.target.getAttribute('data-choice');
+     // Вызываем общую функцию обработки выбора
+     makeColorChoice(choice);
+}
+
+
 // --- Intention Mode Specifics (Color) ---
 function startIntentionColorRandomizer() {
     colorRandomizingIndicator.classList.add('active');
+    colorShowButton.disabled = false; // Включаем кнопку "Показать Цвет"
     // Запускаем интервал, который постоянно обновляет случайный цвет
+    // Визуально цвет не отображается здесь, только индикатор
     colorRandomizerInterval = setInterval(() => {
         colorRandomizerResult = getRandomColorValue();
-         // В этом режиме результат не показывается до клика игрока
-    }, 50); // Обновляем быстро, чтобы было ощущение постоянного изменения
+         // В этом режиме результат не показывается до клика игрока "Показать Цвет"
+    }, 50); // Обновляем быстро
 }
 
 function showIntentionColor() {
@@ -255,63 +292,90 @@ function showIntentionColor() {
         clearInterval(colorRandomizerInterval); // Останавливаем рандомайзер
         colorRandomizerInterval = null;
     }
-     colorShowButton.disabled = true;
-     colorRandomizingIndicator.classList.remove('active');
+     colorShowButton.disabled = true; // Отключаем кнопку пока идет процесс
+     colorRandomizingIndicator.classList.remove('active'); // Скрываем индикатор
 
+    // colorRandomizerResult содержит последний случайный цвет из интервала
 
-    // colorRandomizerResult уже содержит последний случайный цвет из интервала
+    // Показываем выявленный цвет на специальном дисплее
+    const revealedColor = rainbowColors.find(c => c.value === colorRandomizerResult);
+    colorRevealedColorDisplay.textContent = revealedColor ? revealedColor.name : colorRandomizerResult;
+    // Удаляем старые классы и добавляем класс для цвета
+     colorRevealedColorDisplay.className = 'revealed-display'; // Сбрасываем классы
+     if (revealedColor) {
+         colorRevealedColorDisplay.classList.add(`revealed-${revealedColor.value}`);
+     }
+    colorRevealedColorDisplay.style.display = 'block'; // Показываем дисплей
 
-    // Показываем результат сразу после остановки рандомайзера
-    const resultColor = rainbowColors.find(c => c.value === colorRandomizerResult);
-    colorResultDiv.textContent = `Выявленный цвет: ${resultColor ? resultColor.name : colorRandomizerResult}`;
-    colorResultDiv.className = 'result'; // Сброс классов успеха/неудачи временно
+     colorResultDiv.classList.remove('active', 'success', 'failure'); // Убеждаемся, что результат скрыт
 
      // Ждем 1 секунду перед показом кнопок выбора
      setTimeout(() => {
+        colorRevealedColorDisplay.style.display = 'none'; // Скрываем выявленный цвет
         // Теперь игрок делает свой выбор
         colorChoiceButtonsDiv.style.display = 'flex';
-        colorChoiceButtonsDiv.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        colorChoiceButtonsDiv.querySelectorAll('button').forEach(btn => {
+            btn.disabled = false;
+             btn.removeEventListener('click', handleColorChoiceIntention); // Удаляем старый, если есть
+            btn.addEventListener('click', handleColorChoiceIntention); // Добавляем новый
+         });
      }, 1000); // Задержка 1 секунда как по ТЗ
+}
+
+// Обработчик выбора для режима Намерения
+function handleColorChoiceIntention(event) {
+     const choice = event.target.getAttribute('data-choice');
+     // Вызываем общую функцию обработки выбора
+     makeColorChoice(choice);
 }
 
 
 // --- Common Game Logic (Color) ---
 
+// Общая функция обработки выбора (используется обоими режимами)
 function makeColorChoice(choice) {
     // Отключаем кнопки выбора после клика
     colorChoiceButtonsDiv.querySelectorAll('button').forEach(btn => btn.disabled = true);
+    colorChoiceButtonsDiv.style.display = 'none'; // Скрываем кнопки после выбора
+    colorRevealedColorDisplay.style.display = 'none'; // Убеждаемся, что выявленный цвет скрыт
 
-    const isCorrect = choice === colorRandomizerResult;
+    const isCorrect = choice === colorRandomizerResult; // Используем зафиксированный результат
 
     stats.color.attempts++;
+    let resultText = '';
+
     if (isCorrect) {
         stats.color.wins++;
-        colorResultDiv.textContent = `Успех! Вы угадали цвет: ${rainbowColors.find(c => c.value === colorRandomizerResult).name}`;
-        colorResultDiv.className = 'result success';
+        resultText = `Успех!`;
+        colorResultDiv.className = 'result success active';
     } else {
         stats.color.losses++;
-        colorResultDiv.textContent = `Попробуй ещё. Был: ${rainbowColors.find(c => c.value === colorRandomizerResult).name}`;
-         colorResultDiv.className = 'result failure';
+         const correctColorName = rainbowColors.find(c => c.value === colorRandomizerResult).name;
+        resultText = `Попробуй ещё. Был: ${correctColorName}`; // Показываем правильный цвет в случае неудачи
+         colorResultDiv.className = 'result failure active';
     }
+
+    colorResultDiv.textContent = resultText;
+    // colorResultDiv.classList.add('active'); // Устанавливается в className выше
 
     updateStatsDisplay('color');
 
     // Подготовка к следующему раунду
+    const nextRoundDelay = currentMode === 'vision' ? 1000 : 2000; // Задержка перед следующим раундом
     setTimeout(() => {
-        if (currentMode === 'vision') {
-             colorChoiceButtonsDiv.style.display = 'none';
-             colorShuffleButton.disabled = false; // Включаем кнопку перемешать
-        } else { // intention
-            // Для Намерения мы уже показали результат и выбор.
-            // Теперь просто очищаем и готовимся к следующему клику "Показать Цвет"
-             colorResultDiv.textContent = ''; // Очищаем результат
-             colorChoiceButtonsDiv.style.display = 'none'; // Скрываем кнопки выбора
+        colorResultDiv.classList.remove('active', 'success', 'failure'); // Скрываем результат
+        colorResultDiv.textContent = ''; // Очищаем текст результата
 
-            // Запускаем рандомайзер снова и включаем кнопку "Показать Цвет"
+        if (currentMode === 'vision') {
+             // В Виденьи просто включаем кнопку "Перемешать"
+             colorShuffleButton.disabled = false;
+        } else { // intention
+            // В Намерении снова запускаем рандомайзер и включаем кнопку "Показать Цвет"
             startIntentionColorRandomizer(); // Запускаем новый интервал
             colorShowButton.disabled = false;
+            // Индикатор активен при запуске startIntentionColorRandomizer
         }
-    }, currentMode === 'vision' ? 1000 : 2000); // Пауза перед следующим раундом (можно настроить)
+    }, nextRoundDelay);
 
 }
 
@@ -326,23 +390,24 @@ function updateStatsDisplay(gameType) {
 
 // --- Player Color Selection Logic ---
 function updatePlayerColors() {
-    playerSelectedColors = [playerColorSelect1.value, playerColorSelect2.value];
+    const newColor1 = playerColorSelect1.value;
+    const newColor2 = playerColorSelect2.value;
+
+     // Простая валидация, чтобы не выбрать два одинаковых цвета (опционально)
+     if (newColor1 === newColor2) {
+         alert("Выберите два разных цвета!");
+         // Возвращаем старые значения или сбрасываем
+         playerColorSelect1.value = playerSelectedColors[0];
+         playerColorSelect2.value = playerSelectedColors[1];
+         return;
+     }
+
+    playerSelectedColors = [newColor1, newColor2];
+
     // Обновляем кнопки выбора в игре Цвет, если она активна
      if (currentGame === 'color' && (currentMode === 'vision' || currentMode === 'intention')) {
-         renderColorChoiceButtons();
-         // Скрываем кнопки выбора до начала следующего раунда,
-         // иначе игрок может сделать выбор, пока мы меняем кнопки
-         colorChoiceButtonsDiv.style.display = 'none';
-         colorResultDiv.textContent = ''; // Сброс результата
-         // Возвращаем игру в исходное состояние для этого режима
-         if (currentMode === 'vision') {
-              colorShuffleButton.disabled = false;
-         } else {
-             // В режиме Намерения нужно убедиться, что интервал запущен и кнопка "Показать" активна
-             stopCurrentGameLogic(); // Останавливаем старый интервал
-             startIntentionColorRandomizer(); // Запускаем новый
-             colorShowButton.disabled = false;
-         }
+         // Перезапускаем игру с новыми цветами, чтобы сбросить состояние
+         setupGame('color', currentMode);
      }
 }
 
@@ -367,7 +432,10 @@ backButtons.forEach(button => {
 });
 
 // Color Game Specific Listeners
+// Shuffle button is only used in Vision mode
 colorShuffleButton.addEventListener('click', shuffleColors);
+
+// Show button is only used in Intention mode
 colorShowButton.addEventListener('click', showIntentionColor);
 
 // Player color selection listeners
@@ -383,14 +451,31 @@ populateColorSelectors(); // Заполняем селекты при загру
 // --- Placeholder functions for other games ---
 // Эти функции нужно будет реализовать по аналогии с setupColorGame
 function setupSymbolsGame(mode) {
-     // Настроить элементы для режима (Намерение/Виденье)
-     document.getElementById('symbols-game').querySelector('.game-section.active').classList.remove('active');
-     document.getElementById(`symbols-${mode}-elements`).classList.add('active'); // Предполагая наличие таких элементов
-
-     // Обновить статистику
-     updateStatsDisplay('symbols');
-
-     // Реализовать логику игры Символы (рандомайзер, кнопки выбора круг/треугольник SVG)
      console.log(`Setting up Symbols game in ${mode} mode`);
+      // Показываем нужные элементы режима для символов (нужно добавить в HTML)
+     const symbolsVisionElements = document.getElementById('symbols-vision-elements'); // Предполагаем наличие
+     const symbolsIntentionElements = document.getElementById('symbols-intention-elements'); // Предполагаем наличие
+     const symbolsChoiceButtonsDiv = document.getElementById('symbols-choice-buttons'); // Предполагаем наличие
+     const symbolsResultDiv = document.getElementById('symbols-result'); // Предполагаем наличие
+     const symbolsRevealedSymbolDisplay = document.getElementById('symbols-revealed-symbol-display'); // Предполагаем наличие
+
+     symbolsVisionElements.classList.remove('active');
+     symbolsIntentionElements.classList.remove('active');
+     symbolsChoiceButtonsDiv.style.display = 'none';
+     symbolsResultDiv.classList.remove('active', 'success', 'failure');
+     if(symbolsRevealedSymbolDisplay) symbolsRevealedSymbolDisplay.style.display = 'none';
+
+
+     if (mode === 'vision') {
+        symbolsVisionElements.classList.add('active');
+        // Добавить логику для Виденья: кнопку "Перемешать", индикатор, слушатель
+     } else { // intention
+        symbolsIntentionElements.classList.add('active');
+         // Добавить логику для Намерения: кнопку "Показать Символ", индикатор, слушатель, интервал
+     }
+
+     updateStatsDisplay('symbols');
+     // renderSymbolsChoiceButtons(); // Нужно будет создать эту функцию
 }
 // И так далее для Key, Coins, Dice...
+// Не забудьте добавить соответствующие HTML элементы и слушатели для других игр.
