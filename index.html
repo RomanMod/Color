@@ -2,69 +2,103 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Игра Намерение/Видение</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интуитивные Игры</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем Telegram Web Apps API -->
+    <!-- Подключение Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <div id="app">
-        <div id="welcome" class="screen">
-            <h1>Привет, <span id="user-name">Игрок</span>!</h1>
-            <p>Что будем прокачивать?</p>
-            <button id="btn-intention" class="choice-button">Намерение</button>
-            <button id="btn-vision" class="choice-button">Видение</button>
-        </div>
+    <div class="app-container">
+        <h1 id="player-greeting">Привет!</h1>
 
-        <div id="vision-choice" class="screen">
-            <h2>Видение</h2>
-            <p>Выбери игру:</p>
-            <button id="btn-vision-color" class="choice-button">Цвет</button>
-            <button class="choice-button disabled" disabled>Символы (скоро)</button>
-            <button class="choice-button disabled" disabled>Ключ (скоро)</button>
-            <button class="choice-button disabled" disabled>Монеты (скоро)</button>
-            <button class="choice-button disabled" disabled>Кубик (скоро)</button>
-            <button id="btn-back-to-main" class="back-button">Назад</button>
-        </div>
+        <!-- Главное Меню -->
+        <section id="main-menu" class="game-section active">
+            <h2>Главное Меню</h2>
+            <button class="menu-button" data-game="color">Цвет</button>
+            <button class="menu-button" data-game="symbols">Символы</button>
+            <button class="menu-button" data-game="keys">Ключ</button>
+            <button class="menu-button" data-game="coins">Монеты</button>
+            <button class="menu-button" data-game="dice">Кубик</button>
+        </section>
 
-        <div id="color-game-setup" class="screen">
-            <h2>Игра "Цвет" - Настройка</h2>
-            <p>Выбери два цвета:</p>
-            <div id="color-selector">
-                <!-- Кнопки выбора цвета будут добавлены через JS -->
-            </div>
-            <p>Выбрано: <span id="selected-color-1" class="color-swatch"></span> <span id="selected-color-2" class="color-swatch"></span></p>
-            <button id="btn-start-color-game" class="action-button">Начать игру</button>
-            <button id="btn-back-to-vision" class="back-button">Назад</button>
-        </div>
+        <!-- Раздел Игры (Общий шаблон) -->
+        <section id="game-area" class="game-section hidden">
+            <h2 id="game-title">Название Игры</h2>
 
-        <div id="color-game-play" class="screen">
-            <h2>Игра "Цвет"</h2>
-            <div id="color-display-area">
-                <div id="randomizer-display"></div> <!-- Здесь будет "бегать" цвет -->
+            <!-- Выбор Режима -->
+            <div id="mode-selection">
+                <h3>Выберите режим:</h3>
+                <button id="mode-vision-btn">Видение</button>
+                <button id="mode-intention-btn">Намерение</button>
+                 <button class="back-button" data-target="main-menu">Назад в Меню</button>
             </div>
-            <div id="action-area">
-                 <button id="btn-show-color" class="action-button large">Показать Цвет</button>
-            </div>
-            <div id="result-area">
-                 <!-- Результат будет показан здесь -->
-            </div>
-             <button id="btn-back-to-color-setup" class="back-button">Сменить цвета</button>
-        </div>
 
-         <div id="intention-game" class="screen">
-            <h2>Игра "Намерение"</h2>
-            <p>(Здесь будет игра "Намерение" - В разработке)</p>
-             <!-- Элементы для игры Намерение будут добавлены здесь -->
-             <button id="btn-intention-action" class="action-button">Кликни!</button>
-             <p>Результат: <span id="intention-result">-</span></p>
-            <button id="btn-back-to-main-from-intention" class="back-button">Назад</button>
-        </div>
+            <!-- Игровая Зона -->
+            <div id="game-content" class="hidden">
+                <p>Режим: <span id="current-mode-display"></span></p>
+
+                <!-- Элементы для "Видения" -->
+                <div id="vision-controls" class="mode-controls hidden">
+                    <button id="vision-randomize-btn">Перемешать</button>
+                    <p id="vision-randomizing-text" class="hidden">Перемешиваем...</p>
+                </div>
+
+                 <!-- Элементы для "Намерения" -->
+                <div id="intention-controls" class="mode-controls hidden">
+                     <div id="intention-randomizer-display"></div> <!-- Показ текущего случайного значения -->
+                     <button id="intention-show-btn" class="hidden">Показать</button>
+                     <p id="intention-waiting-text" class="hidden">Генерация...</p>
+                </div>
+
+                <!-- Зона Выбора Игрока -->
+                <div id="player-choice-area" class="hidden">
+                    <p>Ваш выбор:</p>
+                    <div id="choice-buttons">
+                        <!-- Кнопки выбора будут добавлены динамически -->
+                    </div>
+                </div>
+
+                <!-- Результат -->
+                <div id="result-area" class="hidden">
+                    <p>Результат: <span id="result-value"></span></p>
+                    <p id="result-message"></p>
+                </div>
+
+                 <!-- Статистика -->
+                <div id="stats-area">
+                    <h3>Статистика (<span id="stats-game-name"></span>):</h3>
+                    <p>Попыток: <span id="stats-attempts">0</span></p>
+                    <p>Успешных: <span id="stats-success">0</span></p>
+                    <p>Неудачных: <span id="stats-fail">0</span></p>
+                </div>
+
+                <!-- Настройки (только для Цвета) -->
+                <div id="color-settings" class="hidden">
+                    <button id="change-color-btn">Выбрать цвета</button>
+                    <div id="color-picker" class="hidden">
+                        <p>Выберите два цвета:</p>
+                        <div class="color-options">
+                            <button class="color-option" data-color="red" style="background-color: red;"></button>
+                            <button class="color-option" data-color="orange" style="background-color: orange;"></button>
+                            <button class="color-option" data-color="yellow" style="background-color: yellow;"></button>
+                            <button class="color-option" data-color="green" style="background-color: green;"></button>
+                            <button class="color-option" data-color="blue" style="background-color: blue;"></button>
+                            <button class="color-option" data-color="indigo" style="background-color: indigo;"></button>
+                            <button class="color-option" data-color="violet" style="background-color: violet;"></button>
+                        </div>
+                         <p>Выбрано: <span id="selected-colors-display">Красный, Синий</span></p>
+                    </div>
+                </div>
+
+                 <!-- Кнопка Назад в игре -->
+                <button class="back-button" id="game-back-button">Назад</button>
+            </div>
+        </section>
 
     </div>
 
     <script src="script.js"></script>
 </body>
-</html>
+                    </html>
