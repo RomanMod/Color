@@ -62,10 +62,12 @@ function showScreen(screenId) {
     if (screenId === 'menu-screen') {
         menuScreen.classList.remove('hidden');
         currentGameMode = 'menu';
+         Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
     } else if (screenId === 'game-intention') {
         gameIntention.classList.remove('hidden');
         currentGameMode = 'intention';
         startIntentionGame(); // Start the intention randomizer
+         Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
     } else if (screenId === 'game-vision') {
         gameVision.classList.remove('hidden');
         currentGameMode = 'vision';
@@ -76,6 +78,14 @@ function showScreen(screenId) {
          setVisionChoiceButtonsEnabled(false); // Ensure choice buttons are disabled initially
          visionResultDisplay.classList.add('hidden'); // Hide result display
          visionDisplay.style.backgroundColor = 'black'; // Set vision display black
+         visionCurrentResult = null; // Clear any pending result
+          Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
+
+         // Optionally show a Telegram Main Button for Shuffle?
+         // Telegram.WebApp.MainButton.setText('Перемешать');
+         // Telegram.WebApp.MainButton.show();
+         // Telegram.WebApp.onEvent('mainButtonClicked', startVisionShuffle);
+         // Note: Using a standard HTML button is usually fine and gives more control over styling/disabling.
     }
 }
 
@@ -88,13 +98,14 @@ function getRandomResult(mode) {
     }
 }
 
-// Create SVG for a shape
+// Create SVG for a shape (used for display)
 function createSvgShape(type) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "100");
+    svg.setAttribute("width", "100"); // Base size, will be scaled by CSS
     svg.setAttribute("height", "100");
     svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("fill", "black"); // Shapes should be black
+    // Fill color handled by CSS for display contexts
+    // svg.setAttribute("fill", "black"); // Don't set fill here, let CSS handle it
 
     if (type === 'circle') {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -119,11 +130,12 @@ function startIntentionGame() {
     intentionRandomizerInterval = setInterval(() => {
         intentionCurrentResult = getRandomResult(intentionMode);
         // console.log('Intention randomizing...', intentionCurrentResult); // Optional: for debugging
-    }, 100); // Update result every 100ms
+    }, 50); // Update result more frequently for smoother "feel"
 
     intentionShowBtn.classList.remove('hidden');
     intentionResultDisplay.classList.add('hidden');
     intentionDisplay.style.backgroundColor = 'black'; // Ensure display is black initially
+    intentionResultDisplay.style.backgroundColor = 'white'; // Ensure result background is white for Intention
 }
 
 function stopIntentionGame() {
@@ -135,6 +147,7 @@ function stopIntentionGame() {
     intentionShowBtn.classList.remove('hidden'); // Ensure button is visible if game stops unexpectedly
     intentionResultDisplay.classList.add('hidden');
     intentionDisplay.style.backgroundColor = 'black'; // Reset display color
+     intentionResultDisplay.style.backgroundColor = 'white'; // Reset result background
 }
 
 function showIntentionResult() {
@@ -146,6 +159,8 @@ function showIntentionResult() {
 
     // Display the result inside intentionResultDisplay (which is on white background)
     intentionResultDisplay.innerHTML = ''; // Clear previous content
+    intentionResultDisplay.style.backgroundColor = 'white'; // Ensure white background for intention result
+
     if (intentionMode === 'color') {
         // For color, show the color block itself
          const colorBlock = document.createElement('div');
@@ -158,9 +173,8 @@ function showIntentionResult() {
         intentionResultDisplay.appendChild(createSvgShape(intentionCurrentResult));
     }
 
-
     intentionResultDisplay.classList.remove('hidden');
-    intentionDisplay.style.backgroundColor = 'transparent'; // Show result area
+    intentionDisplay.style.backgroundColor = 'transparent'; // Show result area by making display transparent
 
     // Hide the show button
     intentionShowBtn.classList.add('hidden');
@@ -169,6 +183,7 @@ function showIntentionResult() {
     setTimeout(() => {
         intentionResultDisplay.classList.add('hidden');
         intentionDisplay.style.backgroundColor = 'black'; // Reset display color
+        intentionResultDisplay.style.backgroundColor = 'white'; // Reset result background
         intentionShowBtn.classList.remove('hidden');
         startIntentionGame(); // Restart the randomizer
     }, 3000); // 3 seconds
@@ -177,6 +192,9 @@ function showIntentionResult() {
 // --- Vision Game Logic ---
 
 function startVisionShuffle() {
+    // Ignore click if already shuffling or buttons disabled
+     if (visionShuffleBtn.disabled) return;
+
     // Disable shuffle button and choice buttons
     visionShuffleBtn.disabled = true;
     setVisionChoiceButtonsEnabled(false);
@@ -184,6 +202,7 @@ function startVisionShuffle() {
     // Hide any previous result/message
     visionResultDisplay.classList.add('hidden');
     visionDisplay.style.backgroundColor = 'black'; // Ensure display is black
+    visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result background
 
     // The randomizer is active but hidden for 3 seconds
     visionRandomizerTimeout = setTimeout(() => {
@@ -208,6 +227,8 @@ function stopVisionGame() {
     setVisionChoiceButtonsEnabled(false); // Ensure choice buttons are disabled
      visionResultDisplay.classList.add('hidden');
      visionDisplay.style.backgroundColor = 'black'; // Reset display color
+     visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result background
+     visionCurrentResult = null; // Clear current result
 }
 
 
@@ -224,8 +245,8 @@ function setVisionChoiceButtonsEnabled(enabled) {
 }
 
 function handleVisionChoice(choice) {
-    if (visionCurrentResult === null) {
-        // Player clicked before shuffle finished or after guess
+    if (visionCurrentResult === null || !event.target.closest('.choice-btn') || event.target.closest('.choice-btn').disabled) {
+        // Player clicked before shuffle finished, after guess, or on a disabled button
         return;
     }
 
@@ -236,7 +257,7 @@ function handleVisionChoice(choice) {
     visionStats.attempts++;
 
     visionResultDisplay.classList.remove('hidden'); // Show the result area
-    visionDisplay.style.backgroundColor = 'transparent'; // Show result area
+    visionDisplay.style.backgroundColor = 'transparent'; // Show result area by making display transparent
 
     // Clear previous result/message content
     visionResultDisplay.innerHTML = '';
@@ -252,6 +273,9 @@ function handleVisionChoice(choice) {
     if (visionMode === 'color') {
         // In color mode, the correct color fills the background of visionResultDisplay
         visionResultDisplay.style.backgroundColor = visionCurrentResult; // 'red' or 'blue'
+        // Set text color for visibility on the colored background
+        messageText.style.color = 'white';
+         messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
         // Text is simply added centered on top
         visionResultDisplay.appendChild(messageText);
         // Ensure flex settings are for simple centering
@@ -263,8 +287,15 @@ function handleVisionChoice(choice) {
         feedbackContent.classList.add('vision-feedback-content'); // Container for shape + text
         feedbackContent.style.backgroundColor = 'white'; // White background specifically for this content block
 
-        feedbackContent.appendChild(createSvgShape(visionCurrentResult)); // Add the correct shape SVG
-        feedbackContent.appendChild(messageText); // Add the text below the shape
+        // Create and append the correct shape SVG
+        feedbackContent.appendChild(createSvgShape(visionCurrentResult));
+
+        // Set text color for visibility on the white background
+        messageText.style.color = 'black';
+        messageText.style.textShadow = 'none'; // No shadow needed on white
+
+        // Add the text below the shape
+        feedbackContent.appendChild(messageText);
 
         visionResultDisplay.appendChild(feedbackContent); // Add the container to the display
         // Ensure flex settings are for centering the container
@@ -323,7 +354,7 @@ backButtons.forEach(button => {
 intentionShowBtn.addEventListener('click', showIntentionResult);
 // Duplicate button click on display click
 intentionDisplay.addEventListener('click', () => {
-    if (!intentionShowBtn.classList.contains('hidden') && !intentionShowBtn.disabled) {
+    if (!intentionShowBtn.classList.contains('hidden') && !intentionShowBtn.disabled && currentGameMode === 'intention') {
         intentionShowBtn.click();
     }
 });
@@ -332,8 +363,8 @@ intentionModeRadios.forEach(radio => {
     radio.addEventListener('change', (event) => {
         intentionMode = event.target.value;
          // Restarting ensures the first result after change respects the mode
-         stopIntentionGame();
-         startIntentionGame();
+         stopIntentionGame(); // Stop current
+         startIntentionGame(); // Start new
     });
 });
 
@@ -341,7 +372,7 @@ intentionModeRadios.forEach(radio => {
 visionShuffleBtn.addEventListener('click', startVisionShuffle);
 // Duplicate button click on display click (if shuffle button is enabled)
 visionDisplay.addEventListener('click', () => {
-    if (!visionShuffleBtn.disabled) {
+    if (!visionShuffleBtn.disabled && currentGameMode === 'vision') {
         visionShuffleBtn.click();
     }
 });
@@ -359,14 +390,12 @@ visionModeRadios.forEach(radio => {
     radio.addEventListener('change', (event) => {
         visionMode = event.target.value;
         updateVisionChoicesDisplay();
-        // Optionally reset stats or just keep them? Let's keep them for now.
-        // visionStats = { attempts: 0, successes: 0, failures: 0 };
-        // updateVisionStatsDisplay();
         // Ensure choice buttons are disabled and shuffle is enabled for the new mode
         setVisionChoiceButtonsEnabled(false);
         visionShuffleBtn.disabled = false;
         visionResultDisplay.classList.add('hidden'); // Hide previous result if any
         visionDisplay.style.backgroundColor = 'black'; // Reset display
+         visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result background
          visionCurrentResult = null; // Clear any pending result from previous mode
     });
 });
