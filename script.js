@@ -168,9 +168,16 @@ function showIntentionResult() {
          colorBlock.style.height = '100%';
          colorBlock.style.backgroundColor = intentionCurrentResult;
          intentionResultDisplay.appendChild(colorBlock);
+         // Ensure Intention result display is centered for color block
+         intentionResultDisplay.style.flexDirection = 'row'; // Use row or column, doesn't matter for one block
+         intentionResultDisplay.style.gap = '0';
+
     } else { // shape
         // For shape, show the shape on the white background
         intentionResultDisplay.appendChild(createSvgShape(intentionCurrentResult));
+        // Ensure Intention result display is centered for shape
+         intentionResultDisplay.style.flexDirection = 'column'; // Flex properties from CSS are enough here
+         intentionResultDisplay.style.gap = '0';
     }
 
     intentionResultDisplay.classList.remove('hidden');
@@ -259,6 +266,7 @@ function handleVisionChoice(event) { // Accept event object
     visionShuffleBtn.disabled = true; // Also disable shuffle until display clears
 
     visionStats.attempts++;
+    // console.log("Attempt:", visionStats.attempts); // Debug log
 
     visionResultDisplay.classList.remove('hidden'); // Show the result area
     visionDisplay.style.backgroundColor = 'transparent'; // Show result area by making display transparent
@@ -274,6 +282,15 @@ function handleVisionChoice(event) { // Accept event object
     const isCorrect = (choice === visionCurrentResult);
     messageText.textContent = isCorrect ? 'Успех!' : 'Попробуй ещё!';
 
+    if (isCorrect) {
+        visionStats.successes++;
+         // console.log("Success:", visionStats.successes); // Debug log
+    } else {
+        visionStats.failures++;
+        // console.log("Failure:", visionStats.failures); // Debug log
+    }
+
+
     if (visionMode === 'color') {
         // In color mode, the correct color fills the background of visionResultDisplay
         visionResultDisplay.style.backgroundColor = visionCurrentResult; // 'red' or 'blue'
@@ -281,12 +298,13 @@ function handleVisionChoice(event) { // Accept event object
         messageText.style.color = 'white';
         messageText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)'; // Add shadow for contrast
 
-        // Ensure visionResultDisplay is set up for centering just the text
-         visionResultDisplay.style.flexDirection = 'column'; // Center vertically and horizontally
-         visionResultDisplay.style.gap = '0'; // No gap needed
-
-        // Text is simply added centered on top
+        // Append just the text to visionResultDisplay
         visionResultDisplay.appendChild(messageText);
+
+        // Ensure visionResultDisplay is set up for centering just the text (flex properties already in CSS)
+         visionResultDisplay.style.flexDirection = 'column'; // Flex properties from CSS are enough here
+         visionResultDisplay.style.gap = '0';
+
 
     } else { // shape mode
         // In shape mode, display shape on white background + text overlaid
@@ -303,16 +321,15 @@ function handleVisionChoice(event) { // Accept event object
 
         // Append *both* the background/shape container AND the text directly to visionResultDisplay
         visionResultDisplay.appendChild(feedbackContent);
-        visionResultDisplay.appendChild(messageText);
+        visionResultDisplay.appendChild(messageText); // Text is layered on top via absolute positioning
 
-        // Ensure visionResultDisplay is set up for centering BOTH items (feedbackContent and messageText)
-        // feedbackContent will take up all space due to its size/padding=0
-        // messageText is absolutely positioned via CSS
-         visionResultDisplay.style.flexDirection = 'row'; // Use row or column, doesn't matter much due to absolute text
+         // Ensure visionResultDisplay allows for layering (flex properties already in CSS)
+         // No specific flex-direction or gap needed here as text is absolute
+         visionResultDisplay.style.flexDirection = 'row'; // Reset or keep default
          visionResultDisplay.style.gap = '0';
     }
 
-    updateVisionStatsDisplay();
+    updateVisionStatsDisplay(); // Update the displayed stats
 
     // Reset state after a delay
     visionCurrentResult = null; // Reset the result after guess
@@ -326,6 +343,7 @@ function handleVisionChoice(event) { // Accept event object
 }
 
 function updateVisionStatsDisplay() {
+    // console.log("Updating stats display:", visionStats); // Debug log
     visionStatsSpanAttempts.textContent = visionStats.attempts;
     visionStatsSpanSuccesses.textContent = visionStats.successes;
     visionStatsSpanFailures.textContent = visionStats.failures;
@@ -401,6 +419,9 @@ visionModeRadios.forEach(radio => {
         visionDisplay.style.backgroundColor = 'black'; // Reset display
          visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result background
          visionCurrentResult = null; // Clear any pending result from previous mode
+         // Optionally reset stats when mode changes? Let's keep them for now.
+         // visionStats = { attempts: 0, successes: 0, failures: 0 };
+         // updateVisionStatsDisplay();
     });
 });
 
