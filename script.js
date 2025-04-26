@@ -78,8 +78,8 @@ function showScreen(screenId) {
          setVisionChoiceButtonsEnabled(false); // Ensure choice buttons are disabled initially
          visionResultDisplay.classList.add('hidden'); // Hide result display
          visionDisplay.style.backgroundColor = 'black'; // Set vision display black
+         visionResultDisplay.style.backgroundColor = 'transparent'; // Reset result display background
          visionCurrentResult = null; // Clear any pending result
-          Telegram.WebApp.MainButton.hide(); // Hide Telegram main button if visible
 
          // Optionally show a Telegram Main Button for Shuffle?
          // Telegram.WebApp.MainButton.setText('Перемешать');
@@ -245,7 +245,9 @@ function setVisionChoiceButtonsEnabled(enabled) {
 }
 
 function handleVisionChoice(choice) {
-    if (visionCurrentResult === null || !event.target.closest('.choice-btn') || event.target.closest('.choice-btn').disabled) {
+    // Check if a valid, enabled choice button was clicked
+    const targetBtn = event.target.closest('.choice-btn');
+    if (visionCurrentResult === null || !targetBtn || targetBtn.disabled) {
         // Player clicked before shuffle finished, after guess, or on a disabled button
         return;
     }
@@ -378,13 +380,8 @@ visionDisplay.addEventListener('click', () => {
 });
 
 // Vision choice button listeners (using event delegation on the container)
-visionChoicesDiv.addEventListener('click', (event) => {
-    const targetBtn = event.target.closest('.choice-btn');
-    if (targetBtn && !targetBtn.disabled) {
-        const choice = targetBtn.dataset.choice;
-        handleVisionChoice(choice);
-    }
-});
+visionChoicesDiv.addEventListener('click', handleVisionChoice); // Call handler directly
+
 // Vision mode change
 visionModeRadios.forEach(radio => {
     radio.addEventListener('change', (event) => {
