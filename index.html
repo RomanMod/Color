@@ -3,126 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Mini App</title>
+    <title>Мини-игра для Telegram</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-
-    <div id="app">
-        <div id="player-info"></div>
+    <div class="container">
+        <div id="user-info">
+            Привет, <span id="player-name">Игрок</span>!
+        </div>
 
         <!-- Главное меню -->
-        <div id="main-menu" class="screen active">
+        <div id="menu-screen" class="screen">
             <h2>Выберите игру</h2>
-            <div class="menu-buttons">
-                <button data-game="color">Цвет</button>
-                <button data-game="symbols">Символы</button>
-                <button data-game="key">Ключ</button>
-                <button data-game="coins">Монеты</button>
-                <button data-game="dice">Кубик</button>
-            </div>
+            <button class="menu-button" data-game="color">Цвет</button>
+            <button class="menu-button" data-game="symbols">Символы</button>
+            <button class="menu-button" data-game="key">Ключ</button>
+            <button class="menu-button" data-game="coins">Монеты</button>
+            <button class="menu-button" data-game="dice">Кубик</button>
         </div>
 
-        <!-- Область для игр -->
-        <div id="game-area" class="screen">
-            <!-- Выбор режима -->
-            <div id="mode-selection" class="game-section active">
-                <h2>Выберите режим</h2>
-                <button data-mode="intention" id="mode-intention-btn">Намерение</button>
-                <button data-mode="vision" id="mode-vision-btn">Виденье</button>
+        <!-- Экран игры: Цвет -->
+        <div id="color-game-screen" class="screen hidden">
+            <h2 id="color-game-title">Игра: Цвет</h2>
+            <div class="mode-selection">
+                <button data-mode="intention">Режим: Намерение</button>
+                <button data-mode="vision">Режим: Виденье</button>
             </div>
 
-            <!-- Игра: Цвет -->
-            <div id="color-game" class="game-section">
-                <h3>Игра: Цвет (<span id="color-current-mode"></span>)</h3>
-
-                <div id="color-game-elements">
-                    <!-- Элементы для Виденья -->
-                    <div id="color-vision-elements">
-                         <button id="color-shuffle-button">Перемешать цвета (2с)</button>
-                         <div id="color-shuffling-indicator" class="indicator">Перемешивание...</div>
+            <!-- Режим: Намерение -->
+            <div id="color-mode-intention" class="game-mode hidden">
+                <div class="game-area">
+                    <div class="mini-display" id="color-intention-display">
+                        <div class="display-color" style="background-color: transparent;"></div>
+                        <p class="display-text"></p>
                     </div>
-
-                     <!-- Элементы для Намерения -->
-                    <div id="color-intention-elements">
-                        <button id="color-show-button">Показать Цвет</button>
-                        <div id="color-randomizing-indicator" class="indicator active">Намерение активно...</div>
+                    <button id="color-shuffle-button">Перемешать</button>
+                    <div id="color-choice-buttons" class="choice-buttons hidden">
+                        <button class="choice-button large-button" data-choice-color="red" style="background-color: red;">Красный</button>
+                        <button class="choice-button large-button" data-choice-color="blue" style="background-color: blue;">Синий</button>
                     </div>
-
-                    <!-- Дисплей выявленного цвета (показывается после "Показать Цвет" в режиме Намерение) -->
-                    <div id="color-revealed-color-display" class="revealed-display"></div>
-
-                    <!-- Общие элементы игры Цвет -->
-                    <div id="color-choice-buttons" class="choice-buttons">
-                        <!-- Кнопки выбора цвета будут добавлены JS -->
-                    </div>
-
-                     <div id="color-result" class="result"></div>
                 </div>
-
-
-                <!-- Статистика -->
                 <div class="stats">
-                    <h4>Статистика</h4>
-                    <p>Попытки: <span id="color-stats-attempts">0</span></p>
-                    <p>Успешных: <span id="color-stats-wins">0</span></p>
-                    <p>Не успешные: <span id="color-stats-losses">0</span></p>
+                    <h3>Статистика:</h3>
+                    <p>Попытки: <span id="color-intention-attempts">0</span></p>
+                    <p>Успешные: <span id="color-intention-wins">0</span></p>
+                    <p>Неуспешные: <span id="color-intention-losses">0</span></p>
                 </div>
-
-                 <!-- Выбор цветов игроком -->
-                <div class="player-color-selection">
-                    <h4>Ваши цвета для выбора:</h4>
-                    <select id="player-color-1"></select>
-                    <select id="player-color-2"></select>
+                <div class="color-picker">
+                    <label>Выбор цветов игрока:</label>
+                    <div class="color-options">
+                         <!-- SVG placeholders for 7 rainbow colors? Or just simple buttons -->
+                         <!-- Sticking to simple buttons for now as per description -->
+                        <button class="color-option-button" data-color="#FF0000" style="background-color: #FF0000;"></button>
+                        <button class="color-option-button" data-color="#FFA500" style="background-color: #FFA500;"></button>
+                        <button class="color-option-button" data-color="#FFFF00" style="background-color: #FFFF00;"></button>
+                        <button class="color-option-button" data-color="#008000" style="background-color: #008000;"></button>
+                        <button class="color-option-button" data-color="#0000FF" style="background-color: #0000FF;"></button>
+                        <button class="color-option-button" data-color="#4B0082" style="background-color: #4B0082;"></button>
+                        <button class="color-option-button" data-color="#EE82EE" style="background-color: #EE82EE;"></button>
+                    </div>
+                    <p>Выбрано: <span id="player-selected-colors">Красный, Синий</span></p>
                 </div>
-
-
-                <button class="back-button">Назад</button>
             </div>
 
-            <!-- Тут будут секции для других игр по аналогии -->
-            <div id="symbols-game" class="game-section">
-                 <h3>Игра: Символы (<span id="symbols-current-mode"></span>)</h3>
-                  <div id="symbols-vision-elements" class="game-mode-elements">
-                    <!-- Элементы для Виденья Символов -->
-                    <button id="symbols-shuffle-button">Перемешать символы (2с)</button>
-                    <div id="symbols-shuffling-indicator" class="indicator">Перемешивание...</div>
-                  </div>
-                   <div id="symbols-intention-elements" class="game-mode-elements">
-                    <!-- Элементы для Намерения Символов -->
-                    <button id="symbols-show-button">Показать Символ</button>
-                    <div id="symbols-randomizing-indicator" class="indicator">Намерение активно...</div>
-                  </div>
-                  <div id="symbols-revealed-symbol-display" class="revealed-display svg-display"></div>
-                  <div id="symbols-choice-buttons" class="choice-buttons"></div>
-                  <div id="symbols-result" class="result"></div>
-                  <div class="stats">
-                    <h4>Статистика</h4>
-                    <p>Попытки: <span id="symbols-stats-attempts">0</span></p>
-                    <p>Успешных: <span id="symbols-stats-wins">0</span></p>
-                    <p>Не успешные: <span id="symbols-stats-losses">0</span></p>
-                  </div>
-                 <button class="back-button">Назад</button>
-            </div>
-             <div id="key-game" class="game-section">
-                 <h3>Игра: Ключ (<span id="key-current-mode"></span>)</h3>
-                 <p>Эта игра пока не реализована.</p>
-                 <button class="back-button">Назад</button>
-            </div>
-             <div id="coins-game" class="game-section">
-                 <h3>Игра: Монеты (<span id="coins-current-mode"></span>)</h3>
-                 <p>Эта игра пока не реализована.</p>
-                 <button class="back-button">Назад</button>
-            </div>
-             <div id="dice-game" class="game-section">
-                 <h3>Игра: Кубик (<span id="dice-current-mode"></span>)</h3>
-                 <p>Эта игра пока не реализована.</p>
-                 <button class="back-button">Назад</button>
+            <!-- Режим: Виденье -->
+             <div id="color-mode-vision" class="game-mode hidden">
+                 <div class="game-area">
+                     <div class="mini-display" id="color-vision-display">
+                          <div class="display-color" style="background-color: transparent;"></div>
+                     </div>
+                     <button id="color-show-button">Показать Цвет</button>
+                 </div>
+                 <div class="stats">
+                     <h3>Статистика:</h3>
+                     <p>Попытки: <span id="color-vision-attempts">0</span></p>
+                     <!-- Wins/Losses might not apply directly here as per description -->
+                 </div>
+                 <!-- Color picker might be less relevant or used differently in Vision mode -->
             </div>
 
+            <button class="back-button">Назад</button>
         </div>
+
+        <!-- Экраны других игр (скелеты) -->
+        <div id="symbols-game-screen" class="screen hidden">
+             <h2>Игра: Символы</h2>
+             <div class="mode-selection">
+                 <button data-mode="intention">Режим: Намерение</button>
+                 <button data-mode="vision">Режим: Виденье</button>
+             </div>
+             <div id="symbols-mode-intention" class="game-mode hidden">
+                 <!-- Сюда по аналогии UI для Намерения с символами (круг/треугольник) -->
+                 <div class="game-area">
+                    <div class="mini-display">
+                         <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                         <p class="display-text"></p>
+                     </div>
+                     <button>Перемешать</button>
+                     <div class="choice-buttons hidden">
+                         <button class="large-button">
+                             <svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="black"/></svg>
+                             Круг
+                         </button>
+                          <button class="large-button">
+                             <svg width="100" height="100" viewBox="0 0 100 100"><path d="M50 10 L90 90 H10 Z" fill="black"/></svg>
+                             Треугольник
+                          </button>
+                     </div>
+                 </div>
+                 <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p><p>Успешные: 0</p><p>Неуспешные: 0</p></div>
+             </div>
+             <div id="symbols-mode-vision" class="game-mode hidden">
+                 <!-- Сюда по аналогии UI для Виденья с символами -->
+                  <div class="game-area">
+                     <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                     </div>
+                     <button>Показать Символ</button>
+                 </div>
+                  <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p></div>
+             </div>
+             <button class="back-button">Назад</button>
+        </div>
+
+         <div id="key-game-screen" class="screen hidden">
+             <h2>Игра: Ключ</h2>
+             <div class="mode-selection">
+                 <button data-mode="intention">Режим: Намерение</button>
+                 <button data-mode="vision">Режим: Виденье</button>
+             </div>
+             <div id="key-mode-intention" class="game-mode hidden">
+                  <div class="game-area">
+                    <div class="mini-display">
+                         <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                         <p class="display-text"></p>
+                     </div>
+                     <button>Перемешать</button>
+                      <!-- Пример SVG ключа (просто для иллюстрации) -->
+                      <div class="choice-buttons hidden">
+                          <button class="large-button">
+                              <svg width="100" height="100" viewBox="0 0 100 100">
+                                  <path d="M 20 50 A 30 30 0 0 1 50 20 L 50 30 A 20 20 0 0 0 50 70 L 50 80 A 30 30 0 0 1 20 50 Z M 50 40 L 80 40 L 80 60 L 50 60 Z" fill="black"/>
+                              </svg>
+                              Ключ 1
+                          </button>
+                           <button class="large-button">
+                               <svg width="100" height="100" viewBox="0 0 100 100">
+                                   <path d="M 50 10 L 60 30 L 80 30 L 65 45 L 70 65 L 50 55 L 30 65 L 35 45 L 20 30 L 40 30 Z" fill="black"/>
+                               </svg>
+                               Ключ 2
+                           </button>
+                      </div>
+                  </div>
+                  <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p><p>Успешные: 0</p><p>Неуспешные: 0</p></div>
+             </div>
+             <div id="key-mode-vision" class="game-mode hidden">
+                  <div class="game-area">
+                     <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                     </div>
+                     <button>Показать Ключ</button>
+                 </div>
+                  <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p></div>
+             </div>
+             <button class="back-button">Назад</button>
+         </div>
+
+         <div id="coins-game-screen" class="screen hidden">
+              <h2>Игра: Монеты</h2>
+              <div class="mode-selection">
+                  <button data-mode="intention">Режим: Намерение</button>
+                  <button data-mode="vision">Режим: Виденье</button>
+              </div>
+              <div id="coins-mode-intention" class="game-mode hidden">
+                   <div class="game-area">
+                     <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                          <p class="display-text"></p>
+                      </div>
+                      <button>Перемешать</button>
+                       <div class="choice-buttons hidden">
+                           <button class="large-button">
+                               <svg width="100" height="100" viewBox="0 0 100 100"><text x="50" y="55" font-size="40" text-anchor="middle" alignment-baseline="middle" fill="black">О</text></svg>
+                               Орёл
+                           </button>
+                           <button class="large-button">
+                                <svg width="100" height="100" viewBox="0 0 100 100"><text x="50" y="55" font-size="40" text-anchor="middle" alignment-baseline="middle" fill="black">Р</text></svg>
+                               Решка
+                           </button>
+                       </div>
+                   </div>
+                   <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p><p>Успешные: 0</p><p>Неуспешные: 0</p></div>
+              </div>
+              <div id="coins-mode-vision" class="game-mode hidden">
+                   <div class="game-area">
+                     <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                     </div>
+                     <button>Показать Монету</button>
+                 </div>
+                   <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p></div>
+              </div>
+              <button class="back-button">Назад</button>
+          </div>
+
+          <div id="dice-game-screen" class="screen hidden">
+               <h2>Игра: Кубик</h2>
+               <div class="mode-selection">
+                   <button data-mode="intention">Режим: Намерение</button>
+                   <button data-mode="vision">Режим: Виденье</button>
+               </div>
+               <div id="dice-mode-intention" class="game-mode hidden">
+                    <div class="game-area">
+                      <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                           <p class="display-text"></p>
+                       </div>
+                       <button>Перемешать</button>
+                       <div class="choice-buttons hidden">
+                           <!-- Кнопки для 1-6 -->
+                           <button class="large-button">1</button>
+                           <button class="large-button">2</button>
+                           <button class="large-button">3</button>
+                           <button class="large-button">4</button>
+                           <button class="large-button">5</button>
+                           <button class="large-button">6</button>
+                       </div>
+                    </div>
+                    <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p><p>Успешные: 0</p><p>Неуспешные: 0</p></div>
+               </div>
+               <div id="dice-mode-vision" class="game-mode hidden">
+                    <div class="game-area">
+                      <div class="mini-display">
+                          <svg width="100" height="100" viewBox="0 0 100 100" class="display-symbol"></svg>
+                      </div>
+                      <button>Показать Кубик</button>
+                  </div>
+                    <div class="stats"><h3>Статистика:</h3><p>Попытки: 0</p></div>
+               </div>
+               <button class="back-button">Назад</button>
+           </div>
+
+
     </div>
 
     <script src="script.js"></script>
