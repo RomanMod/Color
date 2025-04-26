@@ -3,68 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра</title>
+    <title>Намеренье или Виденье</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Telegram Web Apps API -->
+    <!-- Подключение Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div id="app">
-        <div id="player-name"></div>
+        <div id="user-greeting">Привет, <span id="telegram-user-name">Игрок</span>!</div>
 
-        <!-- Main Menu View -->
-        <div id="main-menu-view" class="game-view active">
-            <h2>Выберите режим игры:</h2>
-            <button id="intention-mode-btn" class="large-button">Намеренье</button>
-            <button id="vision-mode-btn" class="large-button">Виденье</button>
+        <!-- Экран Меню -->
+        <div id="menu-screen" class="game-screen">
+            <h1>Выберите игру</h1>
+            <button id="btn-start-intention">Намеренье</button>
+            <button id="btn-start-vision">Виденье</button>
         </div>
 
-        <!-- Intention Game View -->
-        <div id="intention-game-view" class="game-view">
+        <!-- Экран Игры: Намеренье -->
+        <div id="game-intention" class="game-screen hidden">
             <h2>Намеренье</h2>
-            <div id="intention-display" class="game-display black-bg"></div>
-            <button id="show-result-btn" class="large-button">Показать</button>
-
-            <div class="controls-row">
-                <div class="settings">
-                    <label for="intention-setting">Тип:</label>
-                    <select id="intention-setting">
-                        <option value="color">Цвет</option>
-                        <option value="shape">Фигура</option>
-                    </select>
+            <!-- Дисплей рандомайзера -->
+            <div id="intention-display" class="display">
+                <div id="intention-result" class="result-display hidden">
+                    <!-- Результат (цвет/фигура) будет отображен здесь -->
                 </div>
-                <button id="intention-back-btn" class="small-button">Назад</button>
+            </div>
+
+            <!-- Кнопка Показать -->
+            <button id="intention-show-btn" class="large-btn">Показать</button>
+
+            <!-- Настройки и Назад -->
+            <div class="controls">
+                <div class="mode-select">
+                    <label><input type="radio" name="intention-mode" value="color" checked> Цвет</label>
+                    <label><input type="radio" name="intention-mode" value="shape"> Фигура</label>
+                </div>
+                <button class="back-btn">Назад</button>
             </div>
         </div>
 
-        <!-- Vision Game View -->
-        <div id="vision-game-view" class="game-view">
+        <!-- Экран Игры: Виденье -->
+        <div id="game-vision" class="game-screen hidden">
             <h2>Виденье</h2>
-             <button id="shuffle-btn" class="large-button">Перемешать</button>
-            <div id="vision-display" class="game-display black-bg"></div>
-            <div id="vision-choices" class="choice-buttons">
-                <!-- Choice buttons will be added here by JS -->
-            </div>
+            <!-- Кнопка Перемешать -->
+            <button id="vision-shuffle-btn" class="large-btn">Перемешать</button>
 
-            <div class="stats">
-                <p>Попыток: <span id="stats-total">0</span></p>
-                <p>Успешных: <span id="stats-success">0</span></p>
-                <p>Неуспешных: <span id="stats-fail">0</span></p>
-            </div>
-
-            <div class="controls-row">
-                 <div class="settings">
-                    <label for="vision-setting">Тип:</label>
-                     <select id="vision-setting">
-                        <option value="color">Цвет</option>
-                        <option value="shape">Фигура</option>
-                    </select>
+            <!-- Дисплей для отображения результата угадывания -->
+            <div id="vision-display" class="display">
+                 <div id="vision-result" class="result-display hidden">
+                    <!-- Результат (цвет/фигура) или сообщение об угадывании -->
                 </div>
-                <button id="vision-back-btn" class="small-button">Назад</button>
+            </div>
+
+            <!-- Кнопки выбора -->
+            <div id="vision-choices" class="choice-buttons">
+                <!-- Кнопки выбора (цвета или фигуры) будут сгенерированы/показаны здесь -->
+                <button class="choice-btn color-btn" data-choice="red"></button>
+                <button class="choice-btn color-btn" data-choice="blue"></button>
+                <button class="choice-btn shape-btn hidden" data-choice="circle">
+                     <svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#000"/></svg>
+                </button>
+                 <button class="choice-btn shape-btn hidden" data-choice="triangle">
+                    <svg width="100" height="100" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="#000"/></svg>
+                 </button>
+            </div>
+
+            <!-- Статистика -->
+            <div id="vision-stats">
+                <p>Попытки: <span id="stats-attempts">0</span></p>
+                <p>Успешные: <span id="stats-successes">0</span></p>
+                <p>Неуспешные: <span id="stats-failures">0</span></p>
+            </div>
+
+            <!-- Настройки и Назад -->
+            <div class="controls">
+                 <div class="mode-select">
+                    <label><input type="radio" name="vision-mode" value="color" checked> Цвет</label>
+                    <label><input type="radio" name="vision-mode" value="shape"> Фигура</label>
+                </div>
+                <button class="back-btn">Назад</button>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-</html>
+                        </html>
