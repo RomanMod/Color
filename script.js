@@ -72,6 +72,10 @@ function showScreen(screenId) {
         // Vision game starts waiting for 'Shuffle' click
         updateVisionChoicesDisplay(); // Ensure correct choice buttons are visible
         updateVisionStatsDisplay(); // Show current stats
+         visionShuffleBtn.disabled = false; // Ensure shuffle button is enabled
+         setVisionChoiceButtonsEnabled(false); // Ensure choice buttons are disabled initially
+         visionResultDisplay.classList.add('hidden'); // Hide result display
+         visionDisplay.style.backgroundColor = 'black'; // Set vision display black
     }
 }
 
@@ -106,23 +110,6 @@ function createSvgShape(type) {
     return svg;
 }
 
-// Display a result (color block or shape) on the result display area
-function displayResult(resultValue, mode) {
-    intentionResultDisplay.innerHTML = ''; // Clear previous content
-    visionResultDisplay.innerHTML = ''; // Clear previous content
-
-    const targetDisplay = currentGameMode === 'intention' ? intentionResultDisplay : visionResultDisplay;
-
-    if (mode === 'color') {
-        targetDisplay.style.backgroundColor = resultValue; // 'red' or 'blue'
-        targetDisplay.textContent = ''; // No text for color block
-    } else { // shape
-        targetDisplay.style.backgroundColor = 'white'; // White background for shape
-        targetDisplay.textContent = ''; // No text initially
-        targetDisplay.appendChild(createSvgShape(resultValue));
-    }
-     targetDisplay.classList.remove('hidden');
-}
 
 // --- Intention Game Logic ---
 
@@ -157,8 +144,22 @@ function showIntentionResult() {
     clearInterval(intentionRandomizerInterval);
     intentionRandomizerInterval = null;
 
-    // Display the result
-    displayResult(intentionCurrentResult, intentionMode);
+    // Display the result inside intentionResultDisplay (which is on white background)
+    intentionResultDisplay.innerHTML = ''; // Clear previous content
+    if (intentionMode === 'color') {
+        // For color, show the color block itself
+         const colorBlock = document.createElement('div');
+         colorBlock.style.width = '100%'; // Fill the result display area
+         colorBlock.style.height = '100%';
+         colorBlock.style.backgroundColor = intentionCurrentResult;
+         intentionResultDisplay.appendChild(colorBlock);
+    } else { // shape
+        // For shape, show the shape on the white background
+        intentionResultDisplay.appendChild(createSvgShape(intentionCurrentResult));
+    }
+
+
+    intentionResultDisplay.classList.remove('hidden');
     intentionDisplay.style.backgroundColor = 'transparent'; // Show result area
 
     // Hide the show button
@@ -239,56 +240,36 @@ function handleVisionChoice(choice) {
 
     // Clear previous result/message content
     visionResultDisplay.innerHTML = '';
-    visionResultDisplay.style.backgroundColor = 'white'; // White background for feedback
+    visionResultDisplay.style.backgroundColor = 'transparent'; // Reset background
 
     let messageText = document.createElement('p');
-    messageText.style.fontSize = '1em'; // Smaller font for text feedback
-    messageText.style.fontWeight = 'normal';
-    messageText.style.color = 'black';
+    messageText.classList.add('feedback-text'); // Add class for styling
 
-    if (choice === visionCurrentResult) {
-        // Correct guess
-        visionStats.successes++;
-        messageText.textContent = 'Успех!';
-         // Display the guessed (correct) item
-        if (visionMode === 'color') {
-             const colorBlock = document.createElement('div');
-             colorBlock.style.width = '80%';
-             colorBlock.style.height = '80%';
-             colorBlock.style.backgroundColor = visionCurrentResult;
-             visionResultDisplay.appendChild(colorBlock);
-        } else { // shape
-             visionResultDisplay.appendChild(createSvgShape(visionCurrentResult));
-        }
-         visionResultDisplay.appendChild(messageText); // Add message below
-         visionResultDisplay.style.flexDirection = 'column'; // Stack elements
-         visionResultDisplay.style.gap = '10px'; // Space between item and text
+    // Determine feedback text
+    const isCorrect = (choice === visionCurrentResult);
+    messageText.textContent = isCorrect ? 'Успех!' : 'Попробуй ещё!';
 
-    } else {
-        // Incorrect guess
-        visionStats.failures++;
-        messageText.textContent = 'Попробуй ещё!';
-        const correctItemLabel = document.createElement('p');
-        correctItemLabel.textContent = 'Надо было угадать:';
-        correctItemLabel.style.fontSize = '0.8em';
-        correctItemLabel.style.fontWeight = 'normal';
-        correctItemLabel.style.color = 'black';
-         visionResultDisplay.appendChild(correctItemLabel);
+    if (visionMode === 'color') {
+        // In color mode, the correct color fills the background of visionResultDisplay
+        visionResultDisplay.style.backgroundColor = visionCurrentResult; // 'red' or 'blue'
+        // Text is simply added centered on top
+        visionResultDisplay.appendChild(messageText);
+        // Ensure flex settings are for simple centering
+        visionResultDisplay.style.flexDirection = 'column'; // Still column for consistency/centering
+        visionResultDisplay.style.gap = '0'; // No gap when just text on background
+    } else { // shape mode
+        // In shape mode, display shape on white background + text below
+        const feedbackContent = document.createElement('div');
+        feedbackContent.classList.add('vision-feedback-content'); // Container for shape + text
+        feedbackContent.style.backgroundColor = 'white'; // White background specifically for this content block
 
-        // Display the *correct* item
-        if (visionMode === 'color') {
-             const colorBlock = document.createElement('div');
-             colorBlock.style.width = '80%';
-             colorBlock.style.height = '80%';
-             colorBlock.style.backgroundColor = visionCurrentResult;
-             visionResultDisplay.appendChild(colorBlock);
-        } else { // shape
-             visionResultDisplay.appendChild(createSvgShape(visionCurrentResult));
-        }
-        visionResultDisplay.appendChild(messageText); // Add message below
-        visionResultDisplay.style.flexDirection = 'column'; // Stack elements
-        visionResultDisplay.style.gap = '10px'; // Space between item and text
+        feedbackContent.appendChild(createSvgShape(visionCurrentResult)); // Add the correct shape SVG
+        feedbackContent.appendChild(messageText); // Add the text below the shape
 
+        visionResultDisplay.appendChild(feedbackContent); // Add the container to the display
+        // Ensure flex settings are for centering the container
+        visionResultDisplay.style.flexDirection = 'column';
+        visionResultDisplay.style.gap = '0';
     }
 
     updateVisionStatsDisplay();
@@ -297,7 +278,8 @@ function handleVisionChoice(choice) {
     visionCurrentResult = null; // Reset the result after guess
     setTimeout(() => {
         visionResultDisplay.classList.add('hidden'); // Hide feedback
-        visionDisplay.style.backgroundColor = 'black'; // Reset display
+        visionResultDisplay.style.backgroundColor = 'transparent'; // Reset background explicitely
+        visionDisplay.style.backgroundColor = 'black'; // Reset display background
         visionShuffleBtn.disabled = false; // Enable shuffle button again
         // Choice buttons remain disabled until next shuffle
     }, 2500); // Show feedback for 2.5 seconds
@@ -313,7 +295,7 @@ function updateVisionChoicesDisplay() {
      // Hide all choice buttons first
     visionColorChoiceBtns.forEach(btn => btn.classList.add('hidden'));
     visionShapeChoiceBtns.forEach(btn => btn.classList.add('hidden'));
-    // Reset button state (disabled until shuffle)
+    // Reset button state (disabled until shuffle, re-enabled in startVisionShuffle)
      setVisionChoiceButtonsEnabled(false);
 
 
@@ -349,9 +331,6 @@ intentionDisplay.addEventListener('click', () => {
 intentionModeRadios.forEach(radio => {
     radio.addEventListener('change', (event) => {
         intentionMode = event.target.value;
-        // Restart randomizer with new mode immediately?
-        // Or just let the *next* result picked by the interval use the new mode?
-        // The latter is simpler and fine for this hidden randomizer.
          // Restarting ensures the first result after change respects the mode
          stopIntentionGame();
          startIntentionGame();
@@ -383,6 +362,12 @@ visionModeRadios.forEach(radio => {
         // Optionally reset stats or just keep them? Let's keep them for now.
         // visionStats = { attempts: 0, successes: 0, failures: 0 };
         // updateVisionStatsDisplay();
+        // Ensure choice buttons are disabled and shuffle is enabled for the new mode
+        setVisionChoiceButtonsEnabled(false);
+        visionShuffleBtn.disabled = false;
+        visionResultDisplay.classList.add('hidden'); // Hide previous result if any
+        visionDisplay.style.backgroundColor = 'black'; // Reset display
+         visionCurrentResult = null; // Clear any pending result from previous mode
     });
 });
 
