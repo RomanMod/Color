@@ -1,168 +1,172 @@
-/* Базовые стили */
 body {
     font-family: sans-serif;
-    margin: 0;
-    padding: 10px;
-    background-color: var(--tg-theme-bg-color, #ffffff); /* Цвет фона из темы Telegram */
+    background-color: var(--tg-theme-bg-color, #f0f0f0); /* Цвет фона из темы Telegram */
     color: var(--tg-theme-text-color, #000000); /* Цвет текста из темы Telegram */
+    margin: 0;
+    padding: 15px;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Чтобы контент был сверху */
+    align-items: flex-start; /* Выравнивание по верху */
     min-height: 100vh;
     box-sizing: border-box;
 }
 
-#app {
+.app-container {
     width: 100%;
-    max-width: 600px; /* Макс ширина для десктопа, на мобильных растянется */
+    max-width: 600px; /* Ограничение ширины для удобства */
     text-align: center;
 }
 
-h1, h2 {
+h1, h2, h3 {
      color: var(--tg-theme-text-color, #333);
 }
 
-/* Стили для экранов */
-.screen {
-    display: none; /* По умолчанию все экраны скрыты */
-    padding: 15px;
-    border: 1px solid var(--tg-theme-hint-color, #ccc);
+.game-section {
+    background-color: var(--tg-theme-secondary-bg-color, #ffffff); /* Вторичный фон */
+    padding: 20px;
     border-radius: 8px;
-    margin-top: 10px;
-    background-color: var(--tg-theme-secondary-bg-color, #f9f9f9);
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.screen.active {
-    display: block; /* Активный экран показываем */
+.hidden {
+    display: none !important; /* Важно для переопределения */
 }
 
-/* Стили кнопок */
+.active {
+    display: block;
+}
+
 button {
-    padding: 10px 15px;
-    margin: 8px 5px;
+    padding: 12px 20px;
     font-size: 16px;
+    margin: 8px;
+    cursor: pointer;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    background-color: var(--tg-theme-button-color, #007bff);
-    color: var(--tg-theme-button-text-color, #ffffff);
-    transition: background-color 0.2s ease;
+    background-color: var(--tg-theme-button-color, #007bff); /* Цвет кнопки из темы */
+    color: var(--tg-theme-button-text-color, #ffffff); /* Цвет текста кнопки из темы */
+    transition: background-color 0.3s ease;
 }
 
 button:hover:not(:disabled) {
-    background-color: #0056b3; /* Немного темнее при наведении */
+    background-color: #0056b3; /* Затемнение при наведении */
 }
 
-button:disabled, button.disabled {
-    background-color: var(--tg-theme-hint-color, #cccccc);
+button:disabled {
+    background-color: #cccccc;
     cursor: not-allowed;
-    opacity: 0.7;
 }
 
-.choice-button {
+.menu-button {
     display: block;
-    width: 80%;
+    width: calc(100% - 16px); /* Ширина кнопки минус отступы */
     margin-left: auto;
     margin-right: auto;
-    padding: 12px;
-    font-size: 18px;
 }
 
 .back-button {
-     background-color: var(--tg-theme-hint-color, #6c757d);
-     margin-top: 20px;
+    background-color: #6c757d;
 }
-.back-button:hover:not(:disabled) {
-     background-color: #5a6268;
-}
-
-.action-button {
-    background-color: var(--tg-theme-button-color, #28a745); /* Зеленый для действий */
-}
-.action-button:hover:not(:disabled) {
-    background-color: #218838;
+.back-button:hover {
+    background-color: #5a6268;
 }
 
-.action-button.large {
-    padding: 20px 30px;
-    font-size: 20px;
-    width: 70%;
+
+#player-choice-area, #result-area, #stats-area {
     margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
 }
 
+#choice-buttons .choice-btn { /* Стили для кнопок выбора */
+    min-width: 100px; /* Минимальная ширина кнопок выбора */
+    text-transform: capitalize; /* Первая буква заглавная */
+}
+/* Специальные стили для кнопок цвета */
+#choice-buttons .choice-btn[data-choice="red"] { background-color: red; }
+#choice-buttons .choice-btn[data-choice="blue"] { background-color: blue; }
+#choice-buttons .choice-btn[data-choice="orange"] { background-color: orange; }
+#choice-buttons .choice-btn[data-choice="yellow"] { background-color: yellow; color: #333;}
+#choice-buttons .choice-btn[data-choice="green"] { background-color: green; }
+#choice-buttons .choice-btn[data-choice="indigo"] { background-color: indigo; }
+#choice-buttons .choice-btn[data-choice="violet"] { background-color: violet; }
 
-/* Стили для игры "Цвет" */
-#color-selector button {
+#result-value {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 50px; /* Минимальная ширина для отображения */
+    min-height: 20px; /* Минимальная высота */
+    text-align: center;
+    text-transform: capitalize;
+}
+
+/* Стили для фона результата в зависимости от цвета */
+#result-value.color-red { background-color: red; color: white; }
+#result-value.color-blue { background-color: blue; color: white; }
+#result-value.color-orange { background-color: orange; color: white; }
+#result-value.color-yellow { background-color: yellow; color: #333; }
+#result-value.color-green { background-color: green; color: white; }
+#result-value.color-indigo { background-color: indigo; color: white; }
+#result-value.color-violet { background-color: violet; color: white; }
+
+#result-message.success {
+    color: green;
+    font-weight: bold;
+}
+
+#result-message.failure {
+    color: red;
+    font-weight: bold;
+}
+
+#intention-randomizer-display {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 15px 0;
+    min-height: 30px; /* Чтобы не прыгало при смене */
+    text-transform: capitalize;
+}
+#intention-randomizer-display.color-red { color: red; }
+#intention-randomizer-display.color-blue { color: blue; }
+#intention-randomizer-display.color-orange { color: orange; }
+#intention-randomizer-display.color-yellow { color: yellow; }
+#intention-randomizer-display.color-green { color: green; }
+#intention-randomizer-display.color-indigo { color: indigo; }
+#intention-randomizer-display.color-violet { color: violet; }
+/* Добавить классы для других игр если нужно визуальное отображение */
+
+#color-settings {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.color-option {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid transparent;
     margin: 5px;
+    border: 2px solid transparent; /* Для индикации выбора */
+    padding: 0; /* Убрать внутренний отступ */
 }
 
-#color-selector button.selected {
-    border: 3px solid var(--tg-theme-text-color, black);
+.color-option.selected {
+    border-color: var(--tg-theme-text-color, #333); /* Граница для выбранных */
     box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-.color-swatch {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    vertical-align: middle;
-    margin: 0 5px;
-    border: 1px solid #ccc;
-}
-
-
-#color-display-area {
-    margin: 20px auto;
-    width: 80%;
-    height: 150px; /* Область для показа цвета */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--tg-theme-hint-color, #ccc);
-    border-radius: 8px;
-    position: relative; /* Для позиционирования рандомайзера */
-    overflow: hidden; /* Чтобы цвет не вылезал */
-}
-
-#randomizer-display {
-    width: 100%;
-    height: 100%;
-    background-color: #eee; /* Начальный фон */
-    transition: background-color 0.05s linear; /* Плавность смены цвета при "беге" */
-    font-size: 24px;
+#selected-colors-display {
     font-weight: bold;
-    color: white; /* Цвет текста поверх цвета */
-    text-shadow: 1px 1px 2px black; /* Тень для читаемости */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-#result-area {
-    min-height: 30px; /* Место под сообщение */
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* Цвета радуги (для кнопок выбора и образцов) */
-.color-red { background-color: red; }
-.color-orange { background-color: orange; }
-.color-yellow { background-color: yellow; }
-.color-green { background-color: green; }
-.color-blue { background-color: blue; }
-.color-indigo { background-color: indigo; }
-.color-violet { background-color: violet; }
-
-/* Стили для игры "Намерение" */
-#intention-result {
-    font-weight: bold;
-    font-size: 1.2em;
-    color: var(--tg-theme-link-color, #007bff);
+    text-transform: capitalize;
 }
