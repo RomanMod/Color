@@ -1,19 +1,21 @@
 /* Space Gray Theme Variables */
 :root {
-    --bg-color: #2e2e2e; /* Darker background */
-    --button-bg: #505050; /* Button color */
-    --button-text: #ffffff; /* Button text color */
-    --text-color: #cccccc; /* General text color */
-    --display-bg-black: #000000; /* Display background (black) */
-    --display-bg-white: #ffffff; /* Result background (white) */
-    --choice-button-bg: #404040; /* Slightly lighter grey for choice buttons */
-    --border-color: #606060; /* Border/separator color */
-    --success-color: #4CAF50; /* Green for success */
-    --fail-color: #F44336; /* Red for failure */
+    --bg-color: #2c2c2e;         /* Темно-серый фон */
+    --text-color: #ffffff;       /* Белый текст */
+    --button-bg-color: #5a5a5c;  /* Серый цвет кнопок */
+    --button-hover-bg-color: #6a6a6c; /* Серый цвет при наведении */
+    --button-text-color: #ffffff;/* Белый текст кнопок */
+    --border-color: #48484a;     /* Цвет границ */
+    --display-bg-color: #000000; /* Черный фон дисплея */
+    --result-bg-color: #ffffff;  /* Белый фон результата */
+    --result-text-color: #000000;/* Черный текст результата */
+    --choice-btn-bg-light: #d3d3d3; /* Светло-серый фон для кнопок выбора фигур */
+    --red-color: #ff3b30;        /* Красный */
+    --blue-color: #007aff;       /* Синий */
 }
 
 body {
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -27,210 +29,177 @@ body {
 
 #app {
     width: 100%;
-    max-width: 400px; /* Limit width for better mobile display */
+    max-width: 600px; /* Ограничение ширины для Mini App */
     text-align: center;
+    padding: 20px;
+    background-color: var(--bg-color); /* Убедимся, что фон внутри контейнера тоже темный */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 20px; /* Отступы между секциями */
 }
 
-#player-name {
+#user-greeting {
     font-size: 1.2em;
     margin-bottom: 20px;
     color: var(--text-color);
 }
 
-h2 {
-    color: var(--button-text); /* Headings might be brighter */
+h1, h2 {
+    color: var(--text-color);
     margin-top: 0;
-    margin-bottom: 20px;
 }
 
-.game-view {
-    display: none; /* Hide all views by default */
+.game-screen {
     width: 100%;
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 15px; /* Отступы между элементами экрана */
 }
 
-.game-view.active {
-    display: flex; /* Show the active view */
+.hidden {
+    display: none !important;
 }
 
-.game-display {
-    width: 100%;
-    max-width: 350px; /* Make it wide */
-    height: 200px; /* Make it tall */
-    margin-bottom: 20px;
-    border: 2px solid var(--border-color);
+button {
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    border: none;
     border-radius: 8px;
-    display: flex; /* For centering content */
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    min-height: 44px; /* Рекомендованная высота для тач-интерфейсов */
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg-color);
+}
+
+button:disabled {
+    background-color: #48484a;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.large-btn {
+    padding: 15px 25px;
+    font-size: 1.2em;
+}
+
+.display {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Соотношение сторон широкого дисплея */
+    background-color: var(--display-bg-color);
+    border-radius: 8px;
+    display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Hide overflowing content like SVGs */
-    position: relative; /* Needed for absolute positioning of results */
-    cursor: pointer; /* Indicate clickable */
+    position: relative; /* Для позиционирования результата внутри */
+    overflow: hidden; /* Убедимся, что результат не вылезает */
 }
 
-.black-bg {
-     background-color: var(--display-bg-black);
-}
-
-/* Styling for displayed results (on white background) */
 .result-display {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--display-bg-white);
-    color: var(--bg-color); /* Text color on white */
+    background-color: var(--result-bg-color);
+    color: var(--result-text-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 1.5em;
+    font-size: 3em; /* Размер текста/фигуры */
     font-weight: bold;
+    border-radius: 8px; /* Унаследуем от display */
 }
 
 .result-display svg {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 10px;
+    max-width: 80%; /* Размер фигур */
+    max-height: 80%;
 }
 
-.result-display svg circle,
-.result-display svg path {
-    fill: var(--bg-color); /* Black fill for shapes on white */
-}
-
-.result-color-swatch {
-     width: 80px;
-     height: 80px;
-     margin-bottom: 10px;
-     border: 1px solid var(--border-color); /* Outline for color block */
-}
-
-
-button {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.2s ease;
-}
-
-button:not(:disabled):hover {
-    background-color: #606060; /* Slightly lighter on hover */
-}
-
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.large-button {
-    width: 100%;
-    max-width: 300px;
-    padding: 15px 20px;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.small-button {
-    padding: 8px 12px;
-    font-size: 0.9em;
-}
-
-.choice-buttons {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    gap: 15px; /* Space between buttons */
-}
-
-.choice-button {
-    width: 100px; /* Square buttons */
-    height: 100px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--choice-button-bg);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.choice-button:not(:disabled):hover {
-    background-color: #505050;
-}
-
-.choice-button.color-blue { background-color: blue; }
-.choice-button.color-red { background-color: red; }
-
-.choice-button svg {
-    width: 60px;
-    height: 60px;
-}
-
-.choice-button svg circle,
-.choice-button svg path {
-    fill: var(--bg-color); /* Black fill for shapes on light grey */
-}
-
-.stats {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-size: 1em;
-    color: var(--text-color);
-}
-
-.stats p {
-    margin: 5px 0;
-}
-
-.controls-row {
-    width: 100%;
-    max-width: 350px;
+.controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 20px;
+    gap: 10px; /* Отступ между левой и правой частью */
+    flex-wrap: wrap; /* Перенос на новую строку если не хватает места */
 }
 
-.settings {
+.mode-select {
+    display: flex;
+    gap: 15px; /* Отступ между радио-кнопками */
+    align-items: center;
+}
+
+.mode-select label {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.settings label {
-    font-size: 1em;
-}
-
-.settings select {
-    padding: 5px;
-    border-radius: 4px;
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border: 1px solid var(--border-color);
-    font-size: 1em;
     cursor: pointer;
 }
 
-/* Specific styles for result text */
-.result-text.success {
-    color: var(--success-color);
-    margin-top: 10px;
+.mode-select input[type="radio"] {
+    margin-right: 5px;
+    accent-color: var(--button-bg-color); /* Цвет активного радио */
 }
 
-.result-text.fail {
-     color: var(--fail-color);
-     margin-top: 10px;
+.back-btn {
+    background-color: var(--button-bg-color); /* Можно сделать немного другим цветом */
+    padding: 10px 15px;
+    font-size: 0.9em;
 }
+
+/* Vision Game Specific Styles */
+#vision-choices {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Отступ между кнопками выбора */
+    margin-top: 15px;
+}
+
+.choice-btn {
+    width: 80px; /* Размер квадратных кнопок */
+    height: 80px;
+    border-radius: 8px;
+    padding: 0; /* Убрать внутренние отступы */
+    display: flex; /* Для центрирования SVG */
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--border-color); /* Небольшая граница */
+}
+
+.color-btn[data-choice="red"] {
+    background-color: var(--red-color);
+}
+
+.color-btn[data-choice="blue"] {
+    background-color: var(--blue-color);
+}
+
+.shape-btn {
+    background-color: var(--choice-btn-bg-light); /* Светло-серый фон */
+    border-radius: 8px; /* Закруглить углы */
+}
+
+.shape-btn svg {
+     width: 80%; /* Размер SVG внутри кнопки */
+     height: 80%;
+     fill: var(--result-text-color); /* Черный цвет фигуры */
+}
+
+
+#vision-stats {
+    margin-top: 15px;
+    font-size: 1em;
+    text-align: center;
+    color: var(--text-color);
+}
+
+#vision-stats p {
+    margin: 5px 0;
+    }
