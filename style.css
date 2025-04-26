@@ -121,12 +121,14 @@ button:disabled {
 /* Styles specific to intention result display - always white background */
 #intention-result {
      background-color: var(--result-bg-color); /* Always white background for intention result */
+     padding: 10px; /* Добавляем внутренний отступ */
+     box-sizing: border-box; /* Учитываем отступ в размере */
 }
 
 /* SVG size for the Intention result display */
 #intention-result svg {
-    max-width: 95%; /* Увеличиваем размер фигур в Намеренье */
-    max-height: 95%;
+    max-width: 100%; /* SVG займет 100% доступного места с учетом padding */
+    max-height: 100%;
 }
 
 
@@ -214,7 +216,7 @@ button:disabled {
 
 /* Style for the feedback text shown over the result */
 .feedback-text {
-    font-size: 16px; /* Уменьшаем размер текста */
+    font-size: 20px; /* Увеличиваем размер текста до 20px */
     font-weight: bold;
     /* Color set dynamically based on mode */
     /* text-shadow and z-index removed as they are set in JS when needed */
@@ -231,14 +233,14 @@ button:disabled {
     background-color: white; /* White background for shapes feedback */
     border-radius: 8px;
     gap: 10px; /* Отступ между фигурой и текстом */
-    padding: 10px; /* Добавим небольшой отступ внутри */
+    padding: 10px; /* Добавим внутренний отступ */
     box-sizing: border-box; /* Учитываем отступ */
 }
 
 /* Style specifically for the shape SVG when displayed as a result in Vision */
 .vision-feedback-content svg {
-     max-width: 70%; /* Увеличим размер фигуры на дисплее в Виденье */
-     max-height: 70%;
+     max-width: 100%; /* SVG займет 100% доступного места с учетом padding */
+     max-height: 100%;
      fill: black; /* Убедимся, что фигура черная на белом фоне */
 }
 
