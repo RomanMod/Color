@@ -1,307 +1,356 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const appContainer = document.querySelector('.app-container');
-    const userNameElement = document.getElementById('user-name');
-    const gameTitleElement = document.getElementById('game-title');
+// Initialize Telegram Web App
+Telegram.WebApp.ready();
+Telegram.WebApp.expand(); // Expand to full height
+const playerName = Telegram.WebApp.initDataUnsafe.user?.first_name || 'Игрок';
 
-    // Секции игры
-    const mainMenu = document.getElementById('main-menu');
-    const namerenieGame = document.getElementById('namerenie-game');
-    const videnieGame = document.getElementById('videnie-game');
+// --- DOM Elements ---
+const app = document.getElementById('app');
+const playerNameElement = document.getElementById('player-name');
 
-    // Элементы Намеренье
-    const namerenieDisplay = document.getElementById('namerenie-display');
-    const btnNamerenieShow = document.getElementById('btn-namerenie-show');
-    const namerenieSettingRadios = document.querySelectorAll('input[name="namerenie-setting"]');
-    let namerenieRandomizerInterval = null;
-    let currentNamerenieChoice = null;
-    let namerenieSetting = 'color'; // 'color' или 'shape'
+// Views
+const mainMenu = document.getElementById('main-menu-view');
+const intentionGameView = document.getElementById('intention-game-view');
+const visionGameView = document.getElementById('vision-game-view');
 
-    // Элементы Виденье
-    const btnVidenieShuffle = document.getElementById('btn-videnie-shuffle');
-    const videnieDisplay = document.getElementById('videnie-display');
-    const videnieResultText = document.getElementById('videnie-result-text');
-    const videnieGuessButtons = document.getElementById('videnie-guess-buttons');
-    const videnieSettingRadios = document.querySelectorAll('input[name="videnie-setting"]');
-    const statsAttempts = document.getElementById('stats-attempts');
-    const statsSuccessful = document.getElementById('stats-successful');
-    const statsUnsuccessful = document.getElementById('stats-unsuccessful');
-    let videnieSetting = 'color'; // 'color' или 'shape'
-    let videnieTargetChoice = null;
-    let stats = { attempts: 0, successful: 0, unsuccessful: 0 };
+// Main Menu Buttons
+const intentionModeBtn = document.getElementById('intention-mode-btn');
+const visionModeBtn = document.getElementById('vision-mode-btn');
 
-    // Общие кнопки
-    const backButtons = document.querySelectorAll('.btn-back');
+// Intention Elements
+const intentionDisplay = document.getElementById('intention-display');
+const showResultBtn = document.getElementById('show-result-btn');
+const intentionSetting = document.getElementById('intention-setting');
+const intentionBackBtn = document.getElementById('intention-back-btn');
 
-    // --- Инициализация Telegram Web Apps API ---
-    if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.ready();
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        if (user) {
-            userNameElement.textContent = `Игрок: ${user.first_name}`;
-            // Telegram.WebApp.BackButton.show(); // Можно использовать нативную кнопку "Назад"
-            // Telegram.WebApp.onEvent('backButtonClicked', showMainMenu); // Обработчик для нативной кнопки
+// Vision Elements
+const shuffleBtn = document.getElementById('shuffle-btn');
+const visionDisplay = document.getElementById('vision-display');
+const visionChoicesContainer = document.getElementById('vision-choices');
+const statsTotal = document.getElementById('stats-total');
+const statsSuccess = document.getElementById('stats-success');
+const statsFail = document.getElementById('stats-fail');
+const visionSetting = document.getElementById('vision-setting');
+const visionBackBtn = document.getElementById('vision-back-btn');
+
+// --- Game State ---
+let currentGameMode = null; // 'intention' or 'vision'
+let intentionSettingType = 'color'; // 'color' or 'shape'
+let visionSettingType = 'color'; // 'color' or 'shape'
+
+// Intention State
+let intentionRandomizerInterval = null;
+let currentIntentionResult = null; // Value currently being randomized
+
+// Vision State
+let visionRandomizerTimeout = null;
+let visionChoiceTimeout = null;
+let currentVisionResult = null; // Value randomized for the round
+let visionStats = { total: 0, success: 0, fail: 0 };
+
+// --- Game Data ---
+const possibleValues = {
+    color: ['blue', 'red'],
+    shape: ['circle', 'triangle']
+};
+
+// SVG Definitions (Simple black circle and triangle)
+const svgCircle = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>`;
+const svgTriangle = `<svg viewBox="0 0 100 100"><path d="M50 10 L90 90 L10 90 Z"/></svg>`;
+
+// --- Utility Functions ---
+
+// Show a specific game view
+function showView(viewElement) {
+    const views = app.querySelectorAll('.game-view');
+    views.forEach(view => view.classList.remove('active'));
+    viewElement.classList.add('active');
+}
+
+// Get a random value based on current setting
+function getRandomValue(type) {
+    const values = possibleValues[type];
+    const randomIndex = Math.floor(Math.random() * values.length);
+    return values[randomIndex];
+}
+
+// Display result (color swatch or SVG) on the display area
+function displayResult(displayElement, value, text = '') {
+    const resultDiv = document.createElement('div');
+    resultDiv.classList.add('result-display');
+
+    if (intentionSettingType === 'color' || visionSettingType === 'color') {
+        const colorSwatch = document.createElement('div');
+        colorSwatch.classList.add('result-color-swatch');
+        colorSwatch.style.backgroundColor = value; // 'blue' or 'red'
+        resultDiv.appendChild(colorSwatch);
+    } else { // shape
+        const svgHtml = value === 'circle' ? svgCircle : svgTriangle;
+        resultDiv.innerHTML = svgHtml; // Directly set SVG HTML
+    }
+
+     if (text) {
+        const textElement = document.createElement('p');
+        textElement.textContent = text;
+        // Add success/fail class if text indicates it
+        if (text.toLowerCase().includes('успех')) {
+            textElement.classList.add('result-text', 'success');
+        } else if (text.toLowerCase().includes('попробуй ещё') || text.toLowerCase().includes('неверно')) { // Add more failure conditions if needed
+             textElement.classList.add('result-text', 'fail');
         } else {
-            userNameElement.textContent = 'Игрок: Гость';
+             textElement.classList.add('result-text');
         }
-    } else {
-         userNameElement.textContent = 'Игрок: (Нет Telegram API)';
+        resultDiv.appendChild(textElement);
     }
 
-    // --- Управление секциями ---
-    function showSection(section) {
-        document.querySelectorAll('.game-section').forEach(sec => {
-            sec.classList.remove('active');
-        });
-        section.classList.add('active');
 
-        // Остановка специфичной логики при переключении
-        if (section !== namerenieGame && namerenieRandomizerInterval) {
-            clearInterval(namerenieRandomizerInterval);
-            namerenieRandomizerInterval = null;
-        }
-        if (section !== videnieGame) {
-           // Дополнительная очистка или сброс для Видения при уходе из секции
-        }
-         if (section === namerenieGame) {
-            gameTitleElement.textContent = 'Намеренье';
-            startNamerenieRandomizer(); // Запускаем рандомайзер Намерения сразу
-        } else if (section === videnieGame) {
-             gameTitleElement.textContent = 'Виденье';
-             resetVidenieGame(); // Сброс Видения при входе
-             updateVidenieGuessButtons(); // Обновить кнопки угадывания при входе
-        } else {
-             gameTitleElement.textContent = 'Выберите игру';
-        }
+    // Clear previous results
+    displayElement.innerHTML = '';
+    displayElement.appendChild(resultDiv);
+}
+
+// Clear the display area
+function clearDisplay(displayElement) {
+     displayElement.innerHTML = '';
+     // Ensure it goes back to black background
+     displayElement.classList.add('black-bg');
+}
+
+
+// --- Intention Mode Logic ---
+
+function startIntentionRandomizer() {
+    if (intentionRandomizerInterval) return; // Already running
+
+    intentionRandomizerInterval = setInterval(() => {
+        // Generate a new value every interval, but don't display it yet
+        currentIntentionResult = getRandomValue(intentionSettingType);
+        // console.log('Intention randomizing:', currentIntentionResult); // Optional: for debugging
+    }, 50); // Fast interval for "constant" randomization
+}
+
+function stopIntentionRandomizer() {
+    if (intentionRandomizerInterval) {
+        clearInterval(intentionRandomizerInterval);
+        intentionRandomizerInterval = null;
+        // console.log('Intention randomizer stopped');
     }
+}
 
-    function showMainMenu() {
-        showSection(mainMenu);
-    }
+function showIntentionResult() {
+    if (!currentIntentionResult) return; // Nothing generated yet
 
-    // --- Логика Намеренье ---
+    stopIntentionRandomizer(); // Stop the randomizer
+    showResultBtn.disabled = true; // Disable the button
 
-    // Обновление настройки Намеренье
-    namerenieSettingRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            namerenieSetting = e.target.value;
-            // При смене настройки, рандомайзер продолжит перемешивать новые типы
-        });
-    });
+    // Display the result that was active when button was pressed
+    displayResult(intentionDisplay, currentIntentionResult);
+    intentionDisplay.classList.remove('black-bg'); // Change display background for result
 
+    // Wait 3 seconds
+    setTimeout(() => {
+        clearDisplay(intentionDisplay); // Clear the result display
+        showResultBtn.disabled = false; // Re-enable the button
+        startIntentionRandomizer(); // Start randomizer again
+    }, 3000);
+}
 
-    // Функция для генерации случайного выбора (цвет или фигура)
-    function getRandomChoice(setting) {
-        if (setting === 'color') {
-            const colors = ['red', 'blue'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        } else { // setting === 'shape'
-            const shapes = ['circle', 'triangle'];
-            return shapes[Math.floor(Math.random() * shapes.length)];
-        }
-    }
+function setupIntentionGame() {
+    currentGameMode = 'intention';
+    showView(intentionGameView);
+    startIntentionRandomizer();
+    showResultBtn.disabled = false; // Ensure button is enabled on entry
+    clearDisplay(intentionDisplay); // Start with a clear display
+}
 
-    // Функция для отрисовки результата на дисплее
-    function renderResult(displayElement, choice) {
-        displayElement.innerHTML = ''; // Очистить дисплей
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('result-item');
+// --- Vision Mode Logic ---
 
-        if (choice === 'red' || choice === 'blue') {
-            resultItem.classList.add(choice); // Добавить класс для цвета фона
-        } else if (choice === 'circle') {
-            resultItem.innerHTML = '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="black"/></svg>';
-        } else if (choice === 'triangle') {
-             resultItem.innerHTML = '<svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="black"/></svg>';
-        }
-         displayElement.appendChild(resultItem);
-    }
+function updateVisionChoices() {
+    visionChoicesContainer.innerHTML = ''; // Clear existing buttons
+    const values = possibleValues[visionSettingType];
 
-    // Запуск рандомайзера Намеренье (скрыто)
-    function startNamerenieRandomizer() {
-        if (namerenieRandomizerInterval) {
-             clearInterval(namerenieRandomizerInterval);
-        }
-        namerenieRandomizerInterval = setInterval(() => {
-            currentNamerenieChoice = getRandomChoice(namerenieSetting);
-            // console.log('Намеренье перемешивает:', currentNamerenieChoice); // Для отладки
-        }, 50); // Быстрое перемешивание
-         namerenieDisplay.innerHTML = ''; // Очистить дисплей при запуске
-         btnNamerenieShow.disabled = false; // Включить кнопку "Показать"
-         btnNamerenieShow.style.display = 'block'; // Показать кнопку
-    }
+    values.forEach(value => {
+        const choiceButton = document.createElement('div');
+        choiceButton.classList.add('choice-button');
+        choiceButton.dataset.value = value; // Store the value on the button
 
-    // Остановка рандомайзера Намеренье и показ результата
-    btnNamerenieShow.addEventListener('click', () => {
-        if (namerenieRandomizerInterval) {
-            clearInterval(namerenieRandomizerInterval);
-            namerenieRandomizerInterval = null; // Останавливаем перемешивание
-
-            // Показываем результат
-            renderResult(namerenieDisplay, currentNamerenieChoice);
-
-            btnNamerenieShow.disabled = true; // Отключаем кнопку
-            // btnNamerenieShow.style.display = 'none'; // Скрываем кнопку (или отключаем и ждем 2с)
-
-            // Ждем 2 секунды, затем сбрасываем и запускаем снова
-            setTimeout(() => {
-                namerenieDisplay.innerHTML = ''; // Очистить дисплей
-                startNamerenieRandomizer(); // Запускаем перемешивание снова
-            }, 2000);
-        }
-    });
-
-
-    // --- Логика Виденье ---
-
-    // Обновление настройки Виденье
-    videnieSettingRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            videnieSetting = e.target.value;
-            resetVidenieGame(); // Сбросить игру при смене настройки
-        });
-    });
-
-    // Обновление кнопок угадывания в Видении
-    function updateVidenieGuessButtons() {
-        videnieGuessButtons.innerHTML = ''; // Очистить предыдущие кнопки
-         videnieGuessButtons.style.pointerEvents = 'none'; // Отключить клики пока не перемешали
-
-        if (videnieSetting === 'color') {
-            videnieGuessButtons.innerHTML = `
-                <button class="color-button blue" data-choice="blue"></button>
-                <button class="color-button red" data-choice="red"></button>
-            `;
+        if (visionSettingType === 'color') {
+            choiceButton.classList.add(`color-${value}`); // Add specific color class
         } else { // shape
-             videnieGuessButtons.innerHTML = `
-                <button data-choice="circle">
-                    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="black"/></svg>
-                </button>
-                <button data-choice="triangle">
-                     <svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="black"/></svg>
-                </button>
-            `;
+            const svgHtml = value === 'circle' ? svgCircle : svgTriangle;
+             choiceButton.innerHTML = svgHtml;
+             // Add a background color for shape buttons to match space gray theme
+             choiceButton.style.backgroundColor = 'var(--choice-button-bg)';
         }
 
-        // Добавить обработчики событий к новым кнопкам
-        videnieGuessButtons.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', handleVidenieGuess);
-        });
-    }
-
-    // Сброс игры Виденье
-    function resetVidenieGame() {
-        videnieTargetChoice = null;
-        videnieDisplay.innerHTML = ''; // Очистить дисплей
-        videnieResultText.textContent = ''; // Очистить текст результата
-        btnVidenieShuffle.disabled = false; // Включить кнопку "Перемешать"
-        videnieGuessButtons.style.pointerEvents = 'none'; // Отключить кнопки угадывания
-        updateVidenieGuessButtons(); // Обновить кнопки в соответствии с текущей настройкой
-        updateStatsDisplay(); // Обновить отображение статистики (хотя сброс игры не сбрасывает статистику)
-    }
-
-    // Обновление отображения статистики
-    function updateStatsDisplay() {
-        statsAttempts.textContent = stats.attempts;
-        statsSuccessful.textContent = stats.successful;
-        statsUnsuccessful.textContent = stats.unsuccessful;
-    }
-
-    // Обработчик кнопки "Перемешать" для Виденья
-    btnVidenieShuffle.addEventListener('click', () => {
-        btnVidenieShuffle.disabled = true; // Отключить кнопку "Перемешать"
-        videnieGuessButtons.style.pointerEvents = 'none'; // Отключить кнопки угадывания
-        videnieDisplay.innerHTML = ''; // Очистить дисплей
-        videnieResultText.textContent = 'Перемешиваю...';
-
-        // Генерируем цель на 2-3 секунды
-        videnieTargetChoice = getRandomChoice(videnieSetting);
-        // console.log('Виденье выбрало:', videnieTargetChoice); // Для отладки
-
-        // Имитация перемешивания
-        let shuffleCount = 0;
-        const shuffleInterval = setInterval(() => {
-             renderResult(videnieDisplay, getRandomChoice(videnieSetting));
-             shuffleCount++;
-             if (shuffleCount > 15) { // Останавливаем через ~1500ms
-                 clearInterval(shuffleInterval);
-                 videnieDisplay.innerHTML = ''; // Очищаем дисплей после "перемешивания"
-                 videnieResultText.textContent = 'Угадай!';
-                 videnieGuessButtons.style.pointerEvents = 'auto'; // Включить кнопки угадывания
-                 // btnVidenieShuffle.disabled = false; // Кнопка Перемешать остается выключенной до угадывания/сброса
-             }
-        }, 100);
-
-
-        // setTimeout(() => {
-        //      videnieDisplay.innerHTML = ''; // Очищаем дисплей
-        //      videnieResultText.textContent = 'Угадай!';
-        //     videnieGuessButtons.style.pointerEvents = 'auto'; // Включить кнопки угадывания
-        //     // btnVidenieShuffle.disabled = false; // Кнопка Перемешать остается выключенной до угадывания/сброса
-        // }, 2500); // Время имитации перемешивания
+        choiceButton.addEventListener('click', handleVisionGuess);
+        visionChoicesContainer.appendChild(choiceButton);
     });
+     // Ensure buttons are enabled initially
+    setVisionChoiceButtonsState(false);
+}
 
-    // Обработчик кнопок угадывания для Виденья
-    function handleVidenieGuess(event) {
-        const guessedChoice = event.currentTarget.dataset.choice;
-
-        if (!videnieTargetChoice) {
-             videnieResultText.textContent = 'Нажмите "Перемешать" сначала!';
-             return;
-        }
-
-        stats.attempts++;
-        videnieGuessButtons.style.pointerEvents = 'none'; // Отключить кнопки угадывания после попытки
-
-        // Показываем результат на дисплее
-        renderResult(videnieDisplay, videnieTargetChoice);
-
-        if (guessedChoice === videnieTargetChoice) {
-            stats.successful++;
-            videnieResultText.textContent = 'Успех!';
+function setVisionChoiceButtonsState(disabled) {
+    const buttons = visionChoicesContainer.querySelectorAll('.choice-button');
+    buttons.forEach(button => {
+        button.disabled = disabled; // Using disabled property on a div doesn't work for click, but visually indicates
+        // For actual click disabling, we can manage event listeners or use a class
+        if (disabled) {
+             button.classList.add('disabled'); // Add class for visual indication
+             button.style.pointerEvents = 'none'; // Disable clicks
         } else {
-            stats.unsuccessful++;
-            videnieResultText.textContent = 'Попробуй ещё. Было:';
-            // Результат (правильный ответ) уже показан на дисплее функцией renderResult
+             button.classList.remove('disabled');
+             button.style.pointerEvents = 'auto'; // Enable clicks
         }
+    });
+}
 
-        updateStatsDisplay();
 
-        // Очистить дисплей и подготовиться к следующему раунду через пару секунд
-        setTimeout(() => {
-            videnieDisplay.innerHTML = '';
-            videnieResultText.textContent = '';
-            videnieTargetChoice = null; // Сбросить цель
-            btnVidenieShuffle.disabled = false; // Включить кнопку "Перемешать" для нового раунда
-        }, 3000); // Показать результат 3 секунды
+function updateVisionStats() {
+    statsTotal.textContent = visionStats.total;
+    statsSuccess.textContent = visionStats.success;
+    statsFail.textContent = visionStats.fail;
+}
+
+function startVisionRandomizer() {
+    if (visionRandomizerTimeout) return; // Already running
+
+    shuffleBtn.disabled = true; // Disable shuffle button
+     setVisionChoiceButtonsState(true); // Disable choice buttons during shuffle
+
+    clearDisplay(visionDisplay); // Clear display
+
+    // Generate and store the result (hidden from player)
+    currentVisionResult = getRandomValue(visionSettingType);
+    // console.log('Vision randomizing... Result is:', currentVisionResult); // Optional: for debugging
+
+    // Randomizer runs for 3 seconds
+    visionRandomizerTimeout = setTimeout(() => {
+        // Result is now "locked in"
+        visionRandomizerTimeout = null;
+        // console.log('Vision randomizer finished. Result locked.');
+        // Now player can make a choice
+        setVisionChoiceButtonsState(false); // Enable choice buttons
+    }, 3000); // 3 seconds
+}
+
+function handleVisionGuess(event) {
+    if (visionRandomizerTimeout !== null) {
+        // Should not happen if buttons are disabled correctly, but safety check
+        console.warn('Guess made before randomizer finished!');
+        return;
     }
 
+    const guessedValue = event.currentTarget.dataset.value;
+    const correctValue = currentVisionResult;
+    let resultText = '';
 
-    // --- Обработчики кнопок навигации ---
-    document.getElementById('btn-namerenie').addEventListener('click', () => {
-        showSection(namerenieGame);
-    });
+    visionStats.total++;
 
-    document.getElementById('btn-videnie').addEventListener('click', () => {
-        showSection(videnieGame);
-    });
+    if (guessedValue === correctValue) {
+        visionStats.success++;
+        resultText = 'Успех!';
+    } else {
+        visionStats.fail++;
+        resultText = 'Неверно! Попробуй ещё.';
+    }
 
-    backButtons.forEach(button => {
-        button.addEventListener('click', () => {
-             // Остановить любые активные процессы перед возвратом
-            if (namerenieRandomizerInterval) {
-                clearInterval(namerenieRandomizerInterval);
-                namerenieRandomizerInterval = null;
-            }
-            // Сбросить состояние Видения
-            resetVidenieGame();
-            // Если есть нативная кнопка Telegram, можно ее спрятать
-            // if (window.Telegram && window.Telegram.WebApp && Telegram.WebApp.BackButton) {
-            //    Telegram.WebApp.BackButton.hide();
-            // }
-            showMainMenu();
-        });
-    });
+    updateVisionStats();
+    setVisionChoiceButtonsState(true); // Disable choice buttons after guessing
 
-    // --- Инициализация при загрузке ---
-    showMainMenu(); // Показать главное меню при старте
+    // Display the correct result and outcome text
+    displayResult(visionDisplay, correctValue, resultText);
+     visionDisplay.classList.remove('black-bg'); // Change display background for result
+
+
+    // After showing result, wait a few seconds before resetting
+    visionChoiceTimeout = setTimeout(() => {
+        clearDisplay(visionDisplay); // Clear the result display
+        shuffleBtn.disabled = false; // Re-enable shuffle button for the next round
+        currentVisionResult = null; // Reset stored result
+        // Choice buttons remain disabled until next shuffle is initiated
+    }, 4000); // Wait 4 seconds before allowing next round
+}
+
+function setupVisionGame() {
+    currentGameMode = 'vision';
+    showView(visionGameView);
+    // Reset stats on entering
+    visionStats = { total: 0, success: 0, fail: 0 };
+    updateVisionStats();
+    // Setup initial choice buttons based on default setting
+    updateVisionChoices();
+    // Ensure buttons are in correct initial state
+    shuffleBtn.disabled = false;
+    setVisionChoiceButtonsState(true); // Choice buttons disabled until shuffle
+    clearDisplay(visionDisplay); // Start with a clear display
+}
+
+// --- Event Listeners ---
+
+// Main Menu
+intentionModeBtn.addEventListener('click', setupIntentionGame);
+visionModeBtn.addEventListener('click', setupVisionGame);
+
+// Intention Game
+showResultBtn.addEventListener('click', showIntentionResult);
+intentionDisplay.addEventListener('click', showIntentionResult); // Click on display duplicates show button
+intentionSetting.addEventListener('change', (event) => {
+    intentionSettingType = event.target.value;
+    stopIntentionRandomizer(); // Stop current randomizer
+    clearDisplay(intentionDisplay); // Clear display if anything was shown
+    startIntentionRandomizer(); // Start new randomizer with new type
+    showResultBtn.disabled = false; // Ensure button is active
 });
+intentionBackBtn.addEventListener('click', () => {
+    stopIntentionRandomizer(); // Clean up interval
+    clearDisplay(intentionDisplay); // Clean up display
+    currentIntentionResult = null; // Reset state
+    currentGameMode = null;
+    showView(mainMenu);
+});
+
+// Vision Game
+shuffleBtn.addEventListener('click', startVisionRandomizer);
+visionDisplay.addEventListener('click', startVisionRandomizer); // Click on display duplicates shuffle button
+visionSetting.addEventListener('change', (event) => {
+    visionSettingType = event.target.value;
+    // Reset game state and update choices when setting changes
+    clearTimeout(visionRandomizerTimeout); // Clear any pending shuffle
+    clearTimeout(visionChoiceTimeout); // Clear any pending result display timeout
+    visionRandomizerTimeout = null;
+    visionChoiceTimeout = null;
+    currentVisionResult = null; // Reset result
+    visionStats = { total: 0, success: 0, fail: 0 }; // Reset stats
+    updateVisionStats();
+    updateVisionChoices(); // Recreate choice buttons
+    shuffleBtn.disabled = false; // Enable shuffle
+    setVisionChoiceButtonsState(true); // Disable choices until shuffle
+    clearDisplay(visionDisplay); // Clear display
+});
+visionBackBtn.addEventListener('click', () => {
+    clearTimeout(visionRandomizerTimeout); // Clean up timeout
+    clearTimeout(visionChoiceTimeout); // Clean up timeout
+     visionRandomizerTimeout = null;
+    visionChoiceTimeout = null;
+    currentVisionResult = null; // Reset state
+    clearDisplay(visionDisplay); // Clean up display
+     visionChoicesContainer.innerHTML = ''; // Remove choice buttons
+    currentGameMode = null;
+    showView(mainMenu);
+});
+
+
+// --- Initialization ---
+function init() {
+    // Display player name
+    playerNameElement.textContent = `Привет, ${playerName}!`;
+
+    // Show the main menu initially
+    showView(mainMenu);
+
+    // Optional: Close button for Mini App (appears in header)
+    // Telegram.WebApp.BackButton.hide(); // Hide default back button if not needed
+    // Telegram.WebApp.MainButton.hide(); // Hide main button if not needed
+}
+
+init();
