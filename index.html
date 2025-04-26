@@ -15,8 +15,29 @@
         <!-- Экран Меню -->
         <div id="menu-screen" class="game-screen">
             <h1>Выберите игру</h1>
-            <button id="btn-start-intention">Намеренье</button>
-            <button id="btn-start-vision">Виденье</button>
+            <div class="menu-buttons">
+                <button id="btn-start-intention">Намеренье</button>
+                <button id="btn-start-vision">Виденье</button>
+            </div>
+
+            <!-- Кнопка "Прочти" -->
+            <div class="read-more-container">
+                 <button id="btn-read-more" class="small-btn">Прочти</button>
+            </div>
+
+
+            <!-- Область для текста "Отличие" -->
+            <div id="read-more-area" class="hidden">
+                <h3>Отличие игры Виденье от Намерение</h3>
+                <p>
+                    В игре Виденье результат сгенерирован и уже существует, сохранен, его можно видеть (после "Перемешать"). Игроку нужно угадать этот сохраненный результат.
+                </p>
+                <p>
+                    В игре Намерение результат постоянно генерируется и изменяется до тех пор, пока вы не кликните кнопку "Показать". Достаточно удерживать образ цвета или фигуры во внутреннем взоре и нажать кнопку "Показать" в тот момент, когда вы почувствуете совпадение.
+                </p>
+                <button id="btn-close-read-more" class="small-btn">Закрыть</button>
+            </div>
+
         </div>
 
         <!-- Экран Игры: Намеренье -->
