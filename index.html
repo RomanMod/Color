@@ -3,72 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рандомайзер Игра</title>
+    <title>Игра</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключение Telegram Web Apps API -->
+    <!-- Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="app-container">
+    <div id="app">
+        <div id="player-name"></div>
 
-        <header>
-            <p id="user-name"></p>
-            <h1 id="game-title">Выберите игру</h1>
-        </header>
+        <!-- Main Menu View -->
+        <div id="main-menu-view" class="game-view active">
+            <h2>Выберите режим игры:</h2>
+            <button id="intention-mode-btn" class="large-button">Намеренье</button>
+            <button id="vision-mode-btn" class="large-button">Виденье</button>
+        </div>
 
-        <!-- Главное меню -->
-        <section id="main-menu" class="game-section active">
-            <button id="btn-namerenie">Намеренье</button>
-            <button id="btn-videnie">Виденье</button>
-        </section>
+        <!-- Intention Game View -->
+        <div id="intention-game-view" class="game-view">
+            <h2>Намеренье</h2>
+            <div id="intention-display" class="game-display black-bg"></div>
+            <button id="show-result-btn" class="large-button">Показать</button>
 
-        <!-- Игра Намеренье -->
-        <section id="namerenie-game" class="game-section">
-            <div id="namerenie-display" class="display">
-                <!-- Результат рандомайзера будет здесь -->
-            </div>
-            <button id="btn-namerenie-show">Показать</button>
-
-            <div class="controls">
-                <div class="setting">
-                    <span>Выбор:</span>
-                    <label><input type="radio" name="namerenie-setting" value="color" checked> Цвет</label>
-                    <label><input type="radio" name="namerenie-setting" value="shape"> Фигура</label>
+            <div class="controls-row">
+                <div class="settings">
+                    <label for="intention-setting">Тип:</label>
+                    <select id="intention-setting">
+                        <option value="color">Цвет</option>
+                        <option value="shape">Фигура</option>
+                    </select>
                 </div>
-                <button class="btn-back">Назад</button>
+                <button id="intention-back-btn" class="small-button">Назад</button>
             </div>
-        </section>
+        </div>
 
-        <!-- Игра Виденье -->
-        <section id="videnie-game" class="game-section">
-            <button id="btn-videnie-shuffle" class="large-button">Перемешать</button>
-            <div id="videnie-display" class="display large">
-                <!-- Результат угадывания будет здесь -->
-                <p id="videnie-result-text"></p>
-            </div>
-            <div id="videnie-guess-buttons" class="guess-buttons">
-                <!-- Кнопки для угадывания будут здесь -->
+        <!-- Vision Game View -->
+        <div id="vision-game-view" class="game-view">
+            <h2>Виденье</h2>
+             <button id="shuffle-btn" class="large-button">Перемешать</button>
+            <div id="vision-display" class="game-display black-bg"></div>
+            <div id="vision-choices" class="choice-buttons">
+                <!-- Choice buttons will be added here by JS -->
             </div>
 
             <div class="stats">
-                <h3>Статистика</h3>
-                <p>Попыток: <span id="stats-attempts">0</span></p>
-                <p>Успешных: <span id="stats-successful">0</span></p>
-                <p>Неуспешные: <span id="stats-unsuccessful">0</span></p>
+                <p>Попыток: <span id="stats-total">0</span></p>
+                <p>Успешных: <span id="stats-success">0</span></p>
+                <p>Неуспешных: <span id="stats-fail">0</span></p>
             </div>
 
-             <div class="controls">
-                 <div class="setting">
-                    <span>Выбор:</span>
-                    <label><input type="radio" name="videnie-setting" value="color" checked> Цвет</label>
-                    <label><input type="radio" name="videnie-setting" value="shape"> Фигура</label>
+            <div class="controls-row">
+                 <div class="settings">
+                    <label for="vision-setting">Тип:</label>
+                     <select id="vision-setting">
+                        <option value="color">Цвет</option>
+                        <option value="shape">Фигура</option>
+                    </select>
                 </div>
-                <button class="btn-back">Назад</button>
+                <button id="vision-back-btn" class="small-button">Назад</button>
             </div>
-        </section>
-
+        </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-    </html>
+</html>
